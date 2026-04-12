@@ -46,3 +46,9 @@ Located in the Oromia region and part of ***Ethiopia's wheat belt***. It relies 
 
 * **Swath gaps:** Spaces between satellite observation tracks where no data is collected during a given pass or compositing period.
 * Retrieval ~6AM local overpass for passive soil-moisture as early morning conditions are thermally more uniform.
+
+---
+
+### Data pre-processing:
+
+**Imputation:** Per-pixel linear interpolation along time axis to fill swath gaps using nearest valid observations before and after (forward/backward filled up to 15 days). Permanently unobserved pixels (ocean, lakes) are filled with 0s.
