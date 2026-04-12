@@ -4,7 +4,7 @@ From 'Poor Economics' by Banerjee and Duflo
 
 Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ lower household income $\rightarrow$ worse nutrition/dept/shool dropout/migration/stress/social breakdowns
 
-**Climate change can exacerbate the logic**
+**Climate change exacerbates the logic**
 
 * Low income households in many countries rely more on rainfed agriculture, farm labor, climate-sensitive food markets.
 * Higher income households/farmers with irrigation, storage, insurance, savings, access too credit, are less exposed.
