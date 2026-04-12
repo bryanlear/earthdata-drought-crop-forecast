@@ -2,7 +2,7 @@
 
 From 'Poor Economics' by Banerjee and Duflo
 
-Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ lower household income $\rightarrow$ worse nutrition/dept/shool dropout/migration/stress/social breakdowns
+Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ lower household income $\rightarrow$ worse nutrition/dept/school dropout/migration/stress/social breakdowns
 
 **Climate change exacerbates the logic**
 
@@ -51,4 +51,30 @@ Located in the Oromia region and part of ***Ethiopia's wheat belt***. It relies 
 
 ### Data pre-processing:
 
-**Imputation:** Per-pixel linear interpolation along time axis to fill swath gaps using nearest valid observations before and after (forward/backward filled up to 15 days). Permanently unobserved pixels (ocean, lakes) are filled with 0s.
+**1. Spatial window:** Extract a $64 \times 64$ pixel window ($\approx 2{,}300$ km) centered on West Arsi, Ethiopia (lat $7.25°$N, lon $39.0°$E) from global EASE-2 grid. Center pixel located using squared Euclidean distance on lat/lon arrays after masking $-9999$ (INVALID) fill values.
+
+**2. Multi feature subset:** $8$ channels/pixel/day:
+
+| Channel | Source group | Description |
+|---|---|---|
+| `soil_moisture_am` | AM | 6 AM passive retrieval ($cm^3/cm^3$) |
+| `soil_moisture_pm` | PM | 6 PM passive retrieval ($cm^3/cm^3$) |
+| `surface_temp_am` | AM | Effective soil temperature (K) |
+| `surface_temp_pm` | PM | Effective soil temperature (K) |
+| `vegetation_water` | AM | Vegetation water content ($kg/m^2$) |
+| `vegetation_opacity` | AM | Vegetation optical depth (unitless) |
+| `tb_polarization_diff` | AM | $T_{b,V} - T_{b,H}$ brightness-temperature difference (K) |
+| `bulk_density` | AM | Soil bulk density ($g/cm^3$) |
+
+Quality filtering: soil-moisture channels masked if `retrieval_qual_flag` bit-0 $= 1$. All channels masked at $-9999$ fill-value sentinel.
+
+**3. Temporal compose:** Non-overlapping $3$-day `nanmean` composites ($3{,}971$ daily $\rightarrow$ $1{,}324$ composites). Improves per pixel coverage from $\sim 20$–$27$% to $\sim 60$–$65$% by aggregating across orbital swath gaps.
+
+**4. Temporal imputation:** Per-pixel linear interpolation along time axis to fill remaining composite gaps using *nearest valid observations* before and after. Edge composites forward/backward filled up to $5$ composites ($15$ days because 3-day layer used for composites). Permanently unobserved pixels (ocean, lakes) 0-filled.
+
+**5. Array to Tensor:** NumPy arrays converted to PyTorch `float32` tensors. Single-channel tensor shape $(T, Lat, Lon)$; multi feature tensor shape $(T, C, Lat, Lon)$. $T = 1{,}324$, $C = 8$, $Lat = Lon = 64$. 
+
+Stored .npz and .pt files
+
+---
+
