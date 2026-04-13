@@ -1,0 +1,56 @@
+flowchart TD
+    input["Multi-spectral Input\nI ∈ ℝ^(C × H × W)"]
+    grp["Band Grouping\nI → {I₁, …, I_G}"]
+
+    pe1["Patch Embed\nGroup 1"]
+    pe2["Patch Embed\nGroup 2"]
+    peG["Patch Embed\nGroup G"]
+
+    cat["Concatenate Group Tokens"]
+
+    pos["Spatial + Spectral\nPositional Encodings"]
+    plus(("＋"))
+
+    mask["Random Masking"]
+    enc["ViT Encoder\n(visible tokens only)"]
+    rest["Insert Mask Tokens\n+ Decoder Positions"]
+    dec["Lightweight ViT Decoder"]
+
+    recon["Reconstruct Masked Patches\np̂ₖ"]
+    loss["Masked-Patch Reconstruction Loss\nL_MSE"]
+
+    input --> grp
+    grp --> pe1
+    grp --> pe2
+    grp --> peG
+    pe1 --> cat
+    pe2 --> cat
+    peG --> cat
+    cat --> plus
+    pos --> plus
+    plus --> mask
+
+    subgraph MAE["MAE-style Backbone"]
+        mask --> enc
+        enc --> rest
+        rest --> dec
+    end
+
+    dec --> recon
+    recon --> loss
+
+    style input fill:#DEEBF7,stroke:#4472C4,stroke-width:2px,color:#000
+    style grp fill:#E2EFDA,stroke:#548235,stroke-width:2px,color:#000
+    style pe1 fill:#F8CBAD,stroke:#C55A11,stroke-width:2px,color:#000
+    style pe2 fill:#F8CBAD,stroke:#C55A11,stroke-width:2px,color:#000
+    style peG fill:#F8CBAD,stroke:#C55A11,stroke-width:2px,color:#000
+    style cat fill:#E2EFDA,stroke:#548235,stroke-width:2px,color:#000
+    style pos fill:#EAD1DC,stroke:#7B4F8A,stroke-width:2px,color:#000
+    style plus fill:#FFFFFF,stroke:#333,stroke-width:2px,color:#000
+    style mask fill:#E2EFDA,stroke:#548235,stroke-width:2px,color:#000
+    style enc fill:#E2EFDA,stroke:#548235,stroke-width:2px,color:#000
+    style rest fill:#E2EFDA,stroke:#548235,stroke-width:2px,color:#000
+    style dec fill:#E2EFDA,stroke:#548235,stroke-width:2px,color:#000
+    style recon fill:#FFF2CC,stroke:#BF9000,stroke-width:2px,color:#000
+    style loss fill:#F2DCDB,stroke:#C0504D,stroke-width:2px,color:#000
+    style MAE fill:none,stroke:#548235,stroke-width:2px,stroke-dasharray: 5 5

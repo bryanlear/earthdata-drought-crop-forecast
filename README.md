@@ -6,7 +6,7 @@ Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ low
 
 **Climate change exacerbates the logic**
 
-* Low income households in many countries rely more on rainfed agriculture, farm labor, climate-sensitive food markets.
+* Agriculture sector in low income countries rely more on rainfed agriculture, farm labor, climate-sensitive food markets.
 * Higher income households/farmers with irrigation, storage, insurance, savings, access too credit, are less exposed.
 * Applying predictive models to such problem $\rightarrow$ help farmers, insurers, water managers, governments act promptly and selectively $\rightarrow$ Prioritize resouce allocation, trigger emergency seed/financial support, index-based payout by insurer $\rightarrow$ help reduce severity of chain of effects
 
@@ -100,5 +100,13 @@ Upper top centimeters of soil respond much faster to weather than root zone. SUr
 
 Input Processing:
 
-**Pixel-wise normalization**: helps put pixel intensities on a scale so model sees inputs with a distribution similar to what it was trained on 
+**Pixel-wise normalization**: helps put pixel intensities on a scale so model sees inputs with a distribution similar to what it was trained on.
+  * PIxel-wise preserves **local climatology**: soil moisture capacity dicatated by variables such as soil composition (sand, clay) and topopgraphy.
+  * Drought $\rightarrow$ Anomaly relative to local historical baseline.
+  * calculate mean and standard deviation for every spatial coordinate over time dimension.
+
+SatMAE architecture:
+
+
+![satmae_architecture](data_processing/plots/satmae_architecture.png)
 
