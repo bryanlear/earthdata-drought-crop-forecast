@@ -2,7 +2,7 @@
 
 From 'Poor Economics' by Banerjee and Duflo
 
-Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ lower household income $\rightarrow$ worse nutrition/dept/school dropout/migration/stress/social breakdowns
+Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ lower household income $\rightarrow$ worse nutrition/debt/school dropout/migration/stress/social breakdowns
 
 **Climate change exacerbates the logic**
 
@@ -34,13 +34,21 @@ $1$ pixel $=$ $36km$ x $36km$ $(1296km^2)$
 
 $1$ degree latitude/longitude ~$111km$
 
+![SMAP soil moisture](data_processing/plots/sm_single_channel.png)
+
 ---
 
 ### West Arsi, Ethiopia:
 
 Located in the Oromia region and part of ***Ethiopia's wheat belt***. It relies heavily on rain-fed agriculture rather than irrigation therefore crop yields in the zone are extremely sensitive to root-zone soil moisture deficits
 
-*Root zone soil moisture*: Water that is available to plants usually considered to be in the upper 200 cm of soil. An accurate depiction can provide valuable insights for agricultural monitoring, weather, prediction, drought/flood warnings. [Source](https://www.drought.gov/topics/soil-moisture)
+*Root zone soil moisture*: Water that is available to plants usually considered to be in the upper 200 cm of soil. An accurate depiction can provide valuable insights for agricultural monitoring, weather, prediction, drought/flood warnings. 
+
+*Surface soil moisture*: Shallow near-surface layer, often upper 5-10 cm.
+
+Soil moisture is also dependent on soil type and vegetation.
+
+[Source](https://www.drought.gov/topics/soil-moisture)
 
 ---
 
@@ -77,4 +85,20 @@ Quality filtering: soil-moisture channels masked if `retrieval_qual_flag` bit-0 
 Stored .npz and .pt files
 
 ---
+
+### Temporal Train/Validation/Test splits
+
+* **Train set**(gradients and weights): Yrs 2015 - 2022 
+* **Validation set**(hyperparameter tuning, stop training before overfitting): Yrs 2023 - 2024
+* **Test**: Yrs 2025-2026
+
+```torch.utils.data.Dataset``` 
+
+Input window must capture **Soil Moisture Memory** of region $\rightarrow$ Amount of time it takes fo an anomaly (e.g., heavcy rainstorm, extreme heatwave) to dissipate and for the soil to return to **climatological baseline**.
+
+Upper top centimeters of soil respond much faster to weather than root zone. SUrface soil moisture changes on timescales of days to a few weeks (depending on other factors such as atmospheric demand, vegetation, soil texture). Root zone moisture can persist for much longer (weeks to months).
+
+Input Processing:
+
+**Pixel-wise normalization**: helps put pixel intensities on a scale so model sees inputs with a distribution similar to what it was trained on 
 
