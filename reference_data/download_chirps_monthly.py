@@ -5,7 +5,7 @@ import shutil
 import urllib.request
 from datetime import date
 
-BASE_URL = "https://data.chc.ucsb.edu/products/CHIRPS-2.0/EAC_monthly/tifs/"
+BASE_URL = "https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_monthly/tifs/"
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
 START_YEAR = 2015
 

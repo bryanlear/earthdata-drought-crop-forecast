@@ -152,4 +152,4 @@ Pretraining:
 ### Reference dataset 
 **Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)**
 
-![Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)](data_processing/plots/CHRIPS_DATA.png)
+![Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)](reference_data/chirps_random_samples.png)
