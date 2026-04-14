@@ -6,3 +6,5 @@
 outlier_analysis.py
 SatMAE-main
 *.zip
+smap_pretrain
+plot_fews.py
