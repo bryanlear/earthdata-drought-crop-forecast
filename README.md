@@ -105,8 +105,9 @@ Input Processing:
   * Drought $\rightarrow$ Anomaly relative to local historical baseline.
   * calculate mean and standard deviation for every spatial coordinate over time dimension.
 
+---
+
 SatMAE architecture:
 
-
-![satmae_architecture](data_processing/plots/satmae_architecture.png)
+<img src="data_processing/plots/satmae_architecture.png" alt="satmae_architecture" width="300">
 

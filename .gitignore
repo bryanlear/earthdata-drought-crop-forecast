@@ -1,2 +1,5 @@
 *.npz
 *.pt
+*.geojson
+*.tif
+*.gz
