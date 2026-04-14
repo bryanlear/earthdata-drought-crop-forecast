@@ -30,11 +30,11 @@ Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ low
 
 [DATA SOURCE: SMAP L3 Radiometer Global Daily 36 km EASE-Grid Soil Moisture V009](data_processing/data_source.md)
 
+![West arsi](data_processing/plots/google_earth.png)
+
 $1$ pixel $=$ $36km$ x $36km$ $(1296km^2)$
 
 $1$ degree latitude/longitude ~$111km$
-
-![SMAP soil moisture](data_processing/plots/sm_single_channel.png)
 
 ---
 
@@ -140,3 +140,5 @@ smap_multifeature       multifeature_tensor         multifeature_{train,val,test
                         └──────────────────────────►
 ```
 
+![reconstruction](data_processing/plots/smap_pretrain/reconstruction.png)
+![pretraining loss](data_processing/plots/smap_pretrain/loss_curve.png)
