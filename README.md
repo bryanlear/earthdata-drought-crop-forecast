@@ -109,6 +109,7 @@ SatMAE architecture:
 SMAP L3 36km channels live on differents scales and distributions (e.g., soil moisture L $0-0.6m^3/m^3$, surface temp: $200-323K$)
 - Normalize channels before feeding to SatMAE 
 
+methods:
 ```
 .npz (imputed)          numpy_to_tensor.py          split_tensors.py
 ─────────────── ──────────────────────────► ──────────────────────────────────────►
@@ -138,3 +139,4 @@ smap_multifeature       multifeature_tensor         multifeature_{train,val,test
                         │     test  2025-2026
                         └──────────────────────────►
 ```
+

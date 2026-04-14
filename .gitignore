@@ -3,4 +3,6 @@
 *.geojson
 *.tif
 *.gz
+outlier_analysis.py
 SatMAE-main
+*.zip
