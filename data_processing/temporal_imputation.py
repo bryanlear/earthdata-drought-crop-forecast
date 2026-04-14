@@ -17,7 +17,7 @@ Outputs as new .npz files with '_imputed'.
 import numpy as np
 from pathlib import Path
 
-ARRAY_DIR = Path('/earthdata-drought-crop-forecast/3d_numpy_arrays/soil_moisture_array')
+ARRAY_DIR = Path('earthdata-drought-crop-forecast/3d_numpy_arrays/soil_moisture_array')
 
 # Max gap (in composite steps) to forward/backward fill at series edges
 MAX_EDGE_FILL = 5  # 5 × 3 days = 15 days
@@ -59,28 +59,78 @@ def temporal_interpolate_1d(series):
     return interpolated
 
 
-def impute_cube_3d(cube):
-    '''Imputes a (T, H, W) cube — temporal interpolation per pixel.
+def _vectorized_temporal_interp(data_2d):
+    '''Vectorized temporal interpolation for a (T, N) array.
 
-    Returns (imputed_cube, nan_mask_before, nan_mask_after) for verification.
+    Equivalent to calling temporal_interpolate_1d on each column but uses
+    forward/backward index accumulation + linear weighting instead of a
+    Python loop — roughly 50-100× faster on large grids.
+    '''
+    T, N = data_2d.shape
+    valid = ~np.isnan(data_2d)          # (T, N)
+    any_valid = valid.any(axis=0)       # (N,)
+
+    timesteps = np.arange(T, dtype=np.int32)[:, None]  # (T, 1)
+
+    # Forward index: last valid timestep <= t  (−1 if none)
+    fwd_idx = np.where(valid, timesteps, np.int32(-1))          # (T, N)
+    np.maximum.accumulate(fwd_idx, axis=0, out=fwd_idx)
+
+    # Backward index: next valid timestep >= t  (T if none)
+    bwd_idx = np.where(valid, timesteps, np.int32(T))           # (T, N)
+    bwd_idx = np.minimum.accumulate(bwd_idx[::-1], axis=0)[::-1].copy()
+
+    # Look up values at nearest forward / backward valid timesteps
+    fwd_safe = np.clip(fwd_idx, 0, T - 1)
+    bwd_safe = np.clip(bwd_idx, 0, T - 1)
+    pixel_idx = np.arange(N)[None, :]                           # (1, N)
+    fwd_vals = data_2d[fwd_safe, pixel_idx]                     # (T, N)
+    bwd_vals = data_2d[bwd_safe, pixel_idx]                     # (T, N)
+
+    # Linear interpolation weight: 0 at fwd, 1 at bwd
+    gap = (bwd_idx - fwd_idx).astype(np.float32)
+    gap[gap == 0] = 1.0
+    weight = (timesteps - fwd_idx).astype(np.float32) / gap
+
+    result = fwd_vals * (1.0 - weight) + bwd_vals * weight      # (T, N)
+
+    # Edge handling: constant fill (matches np.interp behaviour)
+    no_prev = (fwd_idx == -1)   # before first valid obs
+    no_next = (bwd_idx == T)    # after last valid obs
+    result = np.where(no_prev & ~no_next, bwd_vals, result)
+    result = np.where(no_next & ~no_prev, fwd_vals, result)
+    result = np.where(no_prev & no_next, np.nan, result)
+
+    # Bounded edge fill: truncate beyond MAX_EDGE_FILL from first/last valid
+    first_valid_t = np.where(any_valid, np.argmax(valid, axis=0), T).astype(np.int32)
+    last_valid_t  = np.where(any_valid, T - 1 - np.argmax(valid[::-1], axis=0), -1).astype(np.int32)
+
+    fill_start = np.maximum(0, first_valid_t - MAX_EDGE_FILL)              # (N,)
+    fill_end   = np.minimum(T, last_valid_t + MAX_EDGE_FILL + 1)           # (N,)
+
+    result[timesteps < fill_start[None, :]] = np.nan
+    result[timesteps >= fill_end[None, :]]  = np.nan
+
+    # Keep original valid values untouched
+    result[valid] = data_2d[valid]
+
+    return result
+
+
+def impute_cube_3d(cube):
+    '''Imputes a (T, H, W) cube — vectorized temporal interpolation.
+
+    Returns (imputed_cube, nan_before, nan_after) for verification.
     '''
     T, H, W = cube.shape
     nan_before = np.isnan(cube).sum()
-    imputed = cube.copy()
 
-    for r in range(H):
-        for c in range(W):
-            series = imputed[:, r, c]
-            if np.isnan(series).any():
-                imputed[:, r, c] = temporal_interpolate_1d(series)
+    flat = cube.reshape(T, -1)                          # (T, H*W)
+    imputed = _vectorized_temporal_interp(flat).reshape(T, H, W)
 
-    # Fill permanently NaN pixels (never observed across full time series) with 0
-    still_nan = np.isnan(imputed)
-    always_nan_mask = np.all(np.isnan(cube), axis=0)  # (H, W) — permanent gaps
-    for t in range(T):
-        imputed[t][always_nan_mask] = 0.0
-
-    # Any remaining NaN (edge-limited fill) → 0
+    # Permanently NaN pixels → 0
+    always_nan_mask = np.all(np.isnan(cube), axis=0)     # (H, W)
+    imputed[:, always_nan_mask] = 0.0
     imputed = np.nan_to_num(imputed, nan=0.0)
 
     nan_after = np.isnan(imputed).sum()
@@ -88,26 +138,25 @@ def impute_cube_3d(cube):
 
 
 def impute_cube_4d(cube):
-    '''Imputes a (T, C, H, W) cube — temporal interpolation per channel per pixel.
+    '''Imputes a (T, C, H, W) cube — vectorized temporal interpolation per channel.
 
     Each channel is treated independently because they have different NaN patterns
     (e.g. tb_polarization_diff is 97% filled vs soil_moisture at 63%).
+    Processes one channel at a time to limit memory to ~O(T × H × W).
     '''
     T, C, H, W = cube.shape
     nan_before = np.isnan(cube).sum()
     imputed = cube.copy()
 
     for ch in range(C):
-        for r in range(H):
-            for c in range(W):
-                series = imputed[:, ch, r, c]
-                if np.isnan(series).any():
-                    imputed[:, ch, r, c] = temporal_interpolate_1d(series)
+        ch_flat = cube[:, ch].reshape(T, -1)                    # (T, H*W)
+        interpolated = _vectorized_temporal_interp(ch_flat)
+        imputed[:, ch] = interpolated.reshape(T, H, W)
 
-        # Fill permanently NaN pixels for this channel
-        always_nan_ch = np.all(np.isnan(cube[:, ch]), axis=0)  # (H, W)
-        for t in range(T):
-            imputed[t, ch][always_nan_ch] = 0.0
+        # Permanently NaN pixels for this channel → 0
+        always_nan_ch = np.all(np.isnan(cube[:, ch]), axis=0)   # (H, W)
+        imputed[:, ch][:, always_nan_ch] = 0.0
+        print(f'    channel {ch} done')
 
     imputed = np.nan_to_num(imputed, nan=0.0)
 
@@ -138,9 +187,9 @@ def impute_single_channel():
 
 
 def impute_multifeature():
-    '''Imputes smap_multifeature_west_arsi_3day.npz → smap_multifeature_west_arsi_3day_imputed.npz'''
-    src = ARRAY_DIR / 'smap_multifeature_west_arsi_3day.npz'
-    dst = ARRAY_DIR / 'smap_multifeature_west_arsi_3day_imputed.npz'
+    '''Imputes smap_multifeature_africa_3day.npz → smap_multifeature_africa_3day_imputed.npz'''
+    src = ARRAY_DIR / 'smap_multifeature_africa_3day.npz'
+    dst = ARRAY_DIR / 'smap_multifeature_africa_3day_imputed.npz'
 
     print(f'Loading {src.name}...')
     data = np.load(src)

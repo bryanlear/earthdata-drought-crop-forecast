@@ -140,17 +140,10 @@ smap_multifeature       multifeature_tensor         multifeature_{train,val,test
                         └──────────────────────────►
 ```
 
-![reconstruction](data_processing/plots/smap_pretrain/reconstruction.png)
-![pretraining loss](data_processing/plots/smap_pretrain/loss_curve.png)
 
 ---
 
-### Reference dataset for fine tuning
-
-**FEWS Acute Food Insecurity**
-
-![FEWS Acute Food Insecurity](data_processing/plots/fews_ipc_phases.png)
-
+### Reference dataset 
 **Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)**
 
 ![Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)](data_processing/plots/CHRIPS_DATA.png)

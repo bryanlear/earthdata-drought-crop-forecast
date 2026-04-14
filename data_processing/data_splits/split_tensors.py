@@ -18,9 +18,9 @@ import torch
 import numpy as np
 from pathlib import Path
 
-TENSOR_DIR = Path('/root/work/earthdata-drought-crop-forecast/'
+TENSOR_DIR = Path('earthdata-drought-crop-forecast/'
                   '3d_numpy_arrays/soil_moisture_array/3d_tensor_time_lat_long')
-OUT_DIR = Path('/root/work/earthdata-drought-crop-forecast/'
+OUT_DIR = Path('earthdata-drought-crop-forecast/'
                'data_processing/data_splits')
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -79,8 +79,9 @@ def compute_channel_stats(tensor, time_slice, spatial_mask, feature_names):
         clip_lo, clip_hi = None, None
 
         if c in CLIP_CHANNELS and nonzero.numel() > 0:
-            clip_lo = nonzero.quantile(CLIP_LO).item()
-            clip_hi = nonzero.quantile(CLIP_HI).item()
+            nz_np = nonzero.numpy()
+            clip_lo = float(np.percentile(nz_np, CLIP_LO * 100))
+            clip_hi = float(np.percentile(nz_np, CLIP_HI * 100))
             # Clip full tensor (all splits) in-place for this channel
             ch = tensor[:, c]                           # (T, H, W)
             valid_vals = ch[:, mask]                     # (T, n_valid)

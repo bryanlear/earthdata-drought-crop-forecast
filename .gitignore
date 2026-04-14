@@ -8,3 +8,4 @@ SatMAE-main
 *.zip
 smap_pretrain
 plot_fews.py
+*.pyc

@@ -8,10 +8,11 @@ SMAP_DATA_DIR = Path('/Volumes/bryan_SSD/spl3smp')
 AM_GROUP = 'Soil_Moisture_Retrieval_Data_AM'
 PM_GROUP = 'Soil_Moisture_Retrieval_Data_PM'
 
-# West Arsi, Ethiopia centroid
-TARGET_LAT = 7.25
-TARGET_LON = 39.0
-WINDOW_SIZE = 64
+# Africa bounding box (approximate continental extent)
+AFRICA_LAT_MIN = -35.0
+AFRICA_LAT_MAX = 37.5
+AFRICA_LON_MIN = -18.0
+AFRICA_LON_MAX = 52.0
 
 # Feature channels selected for drought / crop-failure detection.
 # Each tuple: (hdf5_group, dataset_name, output_name)
@@ -54,26 +55,28 @@ def parse_date_from_filename(filename):
     return datetime.strptime(date_str, '%Y%m%d')
 
 
-def find_center_index(file_path, center_lat=TARGET_LAT, center_lon=TARGET_LON):
-    '''Finds (row, col) grid index closest to target.
+def find_africa_bounds(file_path):
+    '''Finds (row_start, row_end, col_start, col_end) covering Africa on the EASE-Grid 2.0.
 
-    Fill values (-9999) in lat/lon are set to inf so they never win the argmin.
+    Fill values (-9999) in lat/lon are excluded before computing bounds.
     '''
     with h5py.File(file_path, 'r') as f:
         lat = f[f'{AM_GROUP}/latitude'][:]
         lon = f[f'{AM_GROUP}/longitude'][:]
 
-    fill_mask = (lat == -9999.0) | (lon == -9999.0)
-    distances_sq = (lat - center_lat)**2 + (lon - center_lon)**2
-    distances_sq[fill_mask] = np.inf
-
-    if np.all(np.isinf(distances_sq)):
-        raise ValueError(f'No valid lat/lon pixels in {file_path}')
-
-    center_row, center_col = np.unravel_index(
-        np.argmin(distances_sq), distances_sq.shape
+    valid = (lat != -9999.0) & (lon != -9999.0)
+    in_africa = valid & (
+        (lat >= AFRICA_LAT_MIN) & (lat <= AFRICA_LAT_MAX) &
+        (lon >= AFRICA_LON_MIN) & (lon <= AFRICA_LON_MAX)
     )
-    return int(center_row), int(center_col)
+
+    if not np.any(in_africa):
+        raise ValueError('No pixels found within Africa bounding box')
+
+    rows, cols = np.where(in_africa)
+    row_start, row_end = int(rows.min()), int(rows.max()) + 1
+    col_start, col_end = int(cols.min()), int(cols.max()) + 1
+    return row_start, row_end, col_start, col_end
 
 
 def _find_reference_file(data_dir):
@@ -87,33 +90,13 @@ def _find_reference_file(data_dir):
     return h5_files[min(50, len(h5_files) - 1)]
 
 
-def _crop_window(full_array, center_row, center_col, window_size=WINDOW_SIZE):
-    '''Extracts a fixed (window_size × window_size) patch from a 2D array with NaN edge-padding.'''
-    half = window_size // 2
-    row_start = center_row - half
-    row_end = center_row + half
-    col_start = center_col - half
-    col_end = center_col + half
-
-    window = np.full((window_size, window_size), np.nan, dtype=np.float32)
-    global_rows, global_cols = full_array.shape
-
-    g_r0 = max(0, row_start)
-    g_r1 = min(global_rows, row_end)
-    g_c0 = max(0, col_start)
-    g_c1 = min(global_cols, col_end)
-
-    w_r0 = max(0, -row_start)
-    w_r1 = window_size - max(0, row_end - global_rows)
-    w_c0 = max(0, -col_start)
-    w_c1 = window_size - max(0, col_end - global_cols)
-
-    window[w_r0:w_r1, w_c0:w_c1] = full_array[g_r0:g_r1, g_c0:g_c1]
-    return window
+def _crop_bbox(full_array, row_start, row_end, col_start, col_end):
+    '''Extracts a rectangular subgrid from a 2D array.'''
+    return full_array[row_start:row_end, col_start:col_end].astype(np.float32)
 
 
-def extract_multifeature_window(file_path, center_row, center_col, window_size=WINDOW_SIZE):
-    '''Extracts all feature channels as a (C, 64, 64) array from one SMAP file.
+def extract_multifeature_bbox(file_path, row_start, row_end, col_start, col_end):
+    '''Extracts all feature channels as a (C, H, W) array from one SMAP file.
 
     Each channel is independently masked:
         - fill values (-9999.0) → NaN
@@ -121,7 +104,8 @@ def extract_multifeature_window(file_path, center_row, center_col, window_size=W
     Other channels (temperature, vegetation, etc.) use fill-value masking only
     since they have their own internal QC.
     '''
-    result = np.full((N_FEATURES, window_size, window_size), np.nan, dtype=np.float32)
+    H, W = row_end - row_start, col_end - col_start
+    result = np.full((N_FEATURES, H, W), np.nan, dtype=np.float32)
 
     with h5py.File(file_path, 'r') as f:
         # Read quality flags once for AM and PM
@@ -135,7 +119,7 @@ def extract_multifeature_window(file_path, center_row, center_col, window_size=W
                 tb_h = f[f'{group}/tb_h_corrected'][:]
                 mask = (tb_v != -9999.0) & (tb_h != -9999.0)
                 data = np.where(mask, tb_v - tb_h, np.nan)
-                result[ch_idx] = _crop_window(data, center_row, center_col, window_size)
+                result[ch_idx] = _crop_bbox(data, row_start, row_end, col_start, col_end)
                 continue
 
             data = f[f'{group}/{dataset}'][:]
@@ -147,23 +131,23 @@ def extract_multifeature_window(file_path, center_row, center_col, window_size=W
                 mask = mask & ((qual & 1) == 0)
 
             clean = np.where(mask, data, np.nan)
-            result[ch_idx] = _crop_window(clean, center_row, center_col, window_size)
+            result[ch_idx] = _crop_bbox(clean, row_start, row_end, col_start, col_end)
 
     return result
 
 
 def composite_3day(feature_stacks):
-    '''Composites a list of (C, 64, 64) arrays via per-channel nanmean.'''
-    stack = np.stack(feature_stacks, axis=0)  # (3, C, 64, 64)
+    '''Composites a list of (C, H, W) arrays via per-channel nanmean.'''
+    stack = np.stack(feature_stacks, axis=0)  # (3, C, H, W)
     with warnings.catch_warnings():
         warnings.simplefilter('ignore', RuntimeWarning)
-        return np.nanmean(stack, axis=0).astype(np.float32)  # (C, 64, 64)
+        return np.nanmean(stack, axis=0).astype(np.float32)  # (C, H, W)
 
 
-def load_multifeature_time_series(data_dir=SMAP_DATA_DIR, window_size=WINDOW_SIZE, composite_days=3):
-    '''Loads all SMAP files into a (T', C, 64, 64) composited multi-feature cube.
+def load_multifeature_time_series(data_dir=SMAP_DATA_DIR, composite_days=3):
+    '''Loads all SMAP files into a (T', C, H, W) composited multi-feature cube.
 
-    Output shape: (T', 8, 64, 64) — channels-first for PyTorch Conv2d / ViT patch embedding.
+    Output shape: (T', 8, H, W) — channels-first for PyTorch Conv2d / ViT patch embedding.
     '''
     h5_files = sorted(
         data_dir.glob('SMAP_L3_SM_P_*.h5'),
@@ -173,8 +157,9 @@ def load_multifeature_time_series(data_dir=SMAP_DATA_DIR, window_size=WINDOW_SIZ
         raise FileNotFoundError(f'No SMAP H5 files found in {data_dir}')
 
     ref_file = _find_reference_file(data_dir)
-    center_row, center_col = find_center_index(ref_file)
-    print(f'West Arsi centre index: row={center_row}, col={center_col}')
+    row_start, row_end, col_start, col_end = find_africa_bounds(ref_file)
+    H, W = row_end - row_start, col_end - col_start
+    print(f'Africa bbox: rows [{row_start}:{row_end}], cols [{col_start}:{col_end}] → {H}×{W}')
     print(f'Features ({N_FEATURES}): {[f[2] for f in FEATURES]}')
 
     daily_dates = [parse_date_from_filename(f.name) for f in h5_files]
@@ -183,7 +168,7 @@ def load_multifeature_time_series(data_dir=SMAP_DATA_DIR, window_size=WINDOW_SIZ
 
     for i, fpath in enumerate(h5_files):
         daily_windows.append(
-            extract_multifeature_window(fpath, center_row, center_col, window_size)
+            extract_multifeature_bbox(fpath, row_start, row_end, col_start, col_end)
         )
         if (i + 1) % 500 == 0:
             print(f'  Extracted {i + 1}/{n_daily} daily files')
@@ -208,7 +193,7 @@ def save_cube(cube, dates, feature_names, out_path):
     '''Saves multi-feature cube to compressed .npz.
 
     Contents:
-        cube           — (T', C, 64, 64) float32
+        cube           — (T', C, H, W) float32
         dates          — (T',) ISO date strings
         feature_names  — (C,) channel names for indexing
     '''
@@ -219,12 +204,12 @@ def save_cube(cube, dates, feature_names, out_path):
     print(f'Saved {out_path} ({size_mb:.1f} MB)')
 
 
-OUT_DIR = Path('/Users/bry_lee/earthdata-drought-crop-forecast/3d_numpy_arrays/soil_moisture_array')
+OUT_DIR = Path('earthdata-drought-crop-forecast/3d_numpy_arrays/soil_moisture_array')
 
 
 if __name__ == '__main__':
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    out_path = OUT_DIR / 'smap_multifeature_west_arsi_3day.npz'
+    out_path = OUT_DIR / 'smap_multifeature_africa_3day.npz'
 
     cube, dates = load_multifeature_time_series()
     feature_names = [f[2] for f in FEATURES]

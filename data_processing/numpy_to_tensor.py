@@ -1,7 +1,7 @@
 '''Converts imputed NumPy arrays to PyTorch tensors.
 
-Single channel (1 feature):  (1324, 64, 64)    → (T, Lat, Lon)     3D tensor
-Multi-feature (C features):   (1324, 8, 64, 64) → (T, C, Lat, Lon)  4D tensor
+Single channel (1 feature):  (T, H, W)    → (T, Lat, Lon)     3D tensor
+Multi-feature (C features):   (T, C, H, W) → (T, C, Lat, Lon)  4D tensor
 
 Dates stored as separate list in metadata dict alongside each tensor
 '''
@@ -10,7 +10,7 @@ import torch
 import numpy as np
 from pathlib import Path
 
-ARRAY_DIR = Path('/earthdata-drought-crop-forecast/3d_numpy_arrays/soil_moisture_array')
+ARRAY_DIR = Path('earthdata-drought-crop-forecast/3d_numpy_arrays/soil_moisture_array')
 OUT_DIR = ARRAY_DIR / '3d_tensor_time_lat_long'
 
 
@@ -36,11 +36,11 @@ def convert_single_channel():
 
 
 def convert_multifeature():
-    '''smap_multifeature_west_arsi_3day_imputed.npz → multifeature_tensor_T_C_Lat_Lon.pt'''
-    src = ARRAY_DIR / 'smap_multifeature_west_arsi_3day_imputed.npz'
+    '''smap_multifeature_africa_3day_imputed.npz → multifeature_tensor_T_C_Lat_Lon.pt'''
+    src = ARRAY_DIR / 'smap_multifeature_africa_3day_imputed.npz'
     data = np.load(src)
 
-    cube = data['cube']                       # (1324, 8, 64, 64) float32
+    cube = data['cube']                       # (T, 8, H, W) float32
     dates = list(data['dates'])               # list of 'YYYY-MM-DD' strings
     feature_names = list(data['feature_names'])
 
@@ -65,7 +65,6 @@ def convert_multifeature():
 if __name__ == '__main__':
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    convert_single_channel()
     convert_multifeature()
 
     # Verify round-trip
