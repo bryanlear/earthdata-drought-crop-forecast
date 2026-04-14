@@ -80,7 +80,7 @@ Quality filtering: soil-moisture channels masked if `retrieval_qual_flag` bit-0 
 
 **4. Temporal imputation:** Per-pixel linear interpolation along time axis to fill remaining composite gaps using *nearest valid observations* before and after. Edge composites forward/backward filled up to $5$ composites ($15$ days because 3-day layer used for composites). Permanently unobserved pixels (ocean, lakes) 0-filled.
 
-**5. Array to Tensor:** NumPy arrays converted to PyTorch `float32` tensors. Single-channel tensor shape $(T, Lat, Lon)$; multi feature tensor shape $(T, C, Lat, Lon)$. $T = 1{,}324$, $C = 8$, $Lat = Lon = 64$. 
+**5. Array to Tensor:** NumPy arrays converted to PyTorch `float32` tensors. Single-channel tensor shape $(T, Lat, Lon)$; multi feature tensor shape $(T, C, Lat, Lon)$.
 
 Stored .npz and .pt files
 
@@ -140,6 +140,12 @@ smap_multifeature       multifeature_tensor         multifeature_{train,val,test
                         └──────────────────────────►
 ```
 
+
+---
+
+Pretraining:
+
+![reconstruction pretraining](data_processing/plots/all_africa/reconstruction.png)
 
 ---
 
