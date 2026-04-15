@@ -156,6 +156,17 @@ def main():
 
         df.drop(columns=[col_acc, "_month"], inplace=True)
 
+    # ── drought classification (0=no drought, 1=moderate, 2=severe/extreme) ──
+    for scale in (3, 6):
+        spi_col = f"spi_{scale}"
+        cls_col = f"drought_class_spi{scale}"
+        df[cls_col] = np.where(
+            df[spi_col].isna(), np.nan,
+            np.where(df[spi_col] <= -1.5, 2,         # severe + extreme
+            np.where(df[spi_col] <= -1.0, 1, 0))     # moderate / no drought
+        )
+        df[cls_col] = df[cls_col].astype("Int64")
+
     df.to_csv(OUT_CSV, index=False)
     print(f"\nSaved {len(df)} rows → {OUT_CSV}")
     print(df.head(12).to_string(index=False))
