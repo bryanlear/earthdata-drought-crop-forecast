@@ -22,6 +22,7 @@ import pandas as pd
 import geopandas as gpd
 import rasterio
 from rasterio.mask import mask as rio_mask
+from scipy.stats import gamma as gamma_dist, norm
 
 # ── paths ────────────────────────────────────────────────────────────────────
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -115,9 +116,49 @@ def main():
     df = pd.DataFrame(records)
     df["date"] = pd.to_datetime(df["date"])
     df = df.sort_values("date").reset_index(drop=True)
+
+    # ── compute SPI-3 and SPI-6 ─────────────────────────────────────────────
+    for scale in (3, 6):
+        col_acc = f"precip_{scale}m"
+        col_spi = f"spi_{scale}"
+
+        # rolling accumulation
+        df[col_acc] = df["precip_mm"].rolling(window=scale, min_periods=scale).sum()
+
+        # standardise per calendar month using gamma CDF → normal PPF
+        df[col_spi] = np.nan
+        df["_month"] = df["date"].dt.month
+        for m in range(1, 13):
+            mask = (df["_month"] == m) & df[col_acc].notna()
+            vals = df.loc[mask, col_acc].values
+            if len(vals) < 10:
+                continue
+
+            # fraction of zero-accumulation months
+            q = np.sum(vals == 0) / len(vals)
+            pos = vals[vals > 0]
+
+            if len(pos) < 2:
+                continue
+
+            # fit gamma to positive values
+            a, loc, scale_param = gamma_dist.fit(pos, floc=0)
+
+            # CDF: probability of zero mass + gamma CDF for positives
+            cdf = np.where(
+                vals == 0,
+                q,
+                q + (1 - q) * gamma_dist.cdf(vals, a, loc=loc, scale=scale_param),
+            )
+            # clamp to avoid ±inf from ppf
+            cdf = np.clip(cdf, 1e-6, 1 - 1e-6)
+            df.loc[mask, col_spi] = norm.ppf(cdf)
+
+        df.drop(columns=[col_acc, "_month"], inplace=True)
+
     df.to_csv(OUT_CSV, index=False)
     print(f"\nSaved {len(df)} rows → {OUT_CSV}")
-    print(df.head(10).to_string(index=False))
+    print(df.head(12).to_string(index=False))
 
 
 if __name__ == "__main__":

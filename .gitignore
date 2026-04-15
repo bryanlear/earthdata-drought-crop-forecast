@@ -12,3 +12,4 @@ eval_pretrain.py
 *.pyc
 .DS_Store
 *.pth
+*.csv
