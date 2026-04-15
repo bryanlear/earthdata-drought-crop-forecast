@@ -1,22 +1,20 @@
 import os
 import re
-import gzip
-import shutil
 import urllib.request
 from datetime import date
 
-BASE_URL = "https://data.chc.ucsb.edu/products/CHIRPS-2.0/africa_monthly/tifs/"
+BASE_URL = "https://data.chc.ucsb.edu/products/CHIRPS/v3.0/monthly/africa/tifs/"
 OUTPUT_DIR = os.path.dirname(os.path.abspath(__file__))
-START_YEAR = 2015
+START_YEAR = 1981
 
 def get_available_files():
     with urllib.request.urlopen(BASE_URL) as resp:
         html = resp.read().decode()
-    pattern = r'href="(chirps-v2\.0\.\d{4}\.\d{2}\.tif\.gz)"'
+    pattern = r'href="(chirps-v3\.0\.\d{4}\.\d{2}\.tif)"'
     return sorted(set(re.findall(pattern, html)))
 
 def parse_year_month(filename):
-    m = re.search(r'chirps-v2\.0\.(\d{4})\.(\d{2})\.tif\.gz', filename)
+    m = re.search(r'chirps-v3\.0\.(\d{4})\.(\d{2})\.tif', filename)
     return int(m.group(1)), int(m.group(2))
 
 def main():
@@ -34,28 +32,22 @@ def main():
     print(f"Found {len(targets)} files to download (from {START_YEAR} to latest)")
 
     for i, filename in enumerate(targets, 1):
-        tif_name = filename.replace(".gz", "")
-        tif_path = os.path.join(OUTPUT_DIR, tif_name)
-        gz_path = os.path.join(OUTPUT_DIR, filename)
+        tif_path = os.path.join(OUTPUT_DIR, filename)
 
         if os.path.exists(tif_path):
-            print(f"[{i}/{len(targets)}] Already exists: {tif_name}")
+            print(f"[{i}/{len(targets)}] Already exists: {filename}")
             continue
 
         url = BASE_URL + filename
         print(f"[{i}/{len(targets)}] Downloading: {filename}")
 
         try:
-            urllib.request.urlretrieve(url, gz_path)
-            with gzip.open(gz_path, 'rb') as f_in, open(tif_path, 'wb') as f_out:
-                shutil.copyfileobj(f_in, f_out)
-            os.remove(gz_path)
-            print(f"  -> Extracted: {tif_name}")
+            urllib.request.urlretrieve(url, tif_path)
+            print(f"  -> Saved: {filename}")
         except Exception as e:
             print(f"  -> FAILED: {e}")
-            for p in [gz_path, tif_path]:
-                if os.path.exists(p):
-                    os.remove(p)
+            if os.path.exists(tif_path):
+                os.remove(tif_path)
 
     print("Done.")
 

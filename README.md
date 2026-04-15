@@ -59,7 +59,7 @@ Soil moisture is also dependent on soil type and vegetation.
 
 ### Data pre-processing:
 
-**1. Spatial window:** Extract a $64 \times 64$ pixel window ($\approx 2{,}300$ km) centered on West Arsi, Ethiopia (lat $7.25°$N, lon $39.0°$E) from global EASE-2 grid. Center pixel located using squared Euclidean distance on lat/lon arrays after masking $-9999$ (INVALID) fill values.
+**1. Spatial window:** Extract a $241 \times 187$ pixel window (224x224 with randomly jitter the crop window by up to 17 rows during training and padding) from global EASE-2 grid. 
 
 **2. Multi feature subset:** $8$ channels/pixel/day:
 
