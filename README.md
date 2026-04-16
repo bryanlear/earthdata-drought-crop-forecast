@@ -116,10 +116,10 @@ methods:
 
 smap_multifeature       multifeature_tensor         multifeature_{train,val,test}.pt
  _west_arsi_3day         _T_C_Lat_Lon.pt            ├─ tensor      (raw, clipped)
- _imputed.npz           (1324, 8, 64, 64)           ├─ tensor_norm (z-scored)
-                         float32                     ├─ dates
-│ np arrays             │ PyTorch tensors            ├─ spatial_mask
-│ with 0-filled         │ unchanged from .npz        └─ feature_names
+ _imputed.npz           (1324, 8, 224, 224)         ├─ tensor_norm (z-scored)
+                         float32                    ├─ dates
+│ np arrays             │ PyTorch tensors           ├─ spatial_mask
+│ with 0-filled         │ unchanged from .npz       └─ feature_names
 │ ocean/lake pixels     │
                                                     multifeature_norm_stats.pt
                         ┌──────────────────────────► ├─ channel_stats {mean, std,
