@@ -60,3 +60,80 @@ Loss is calculated only on the 75% of patches that were hidden. THere is no math
 
 **SatMAE**: Framework created by combining several distinct mathematical methods into a pipeline to optimize learning from termporal and multi-spectral satellite imagery.
 
+---
+
+### SatMAE
+
+1. SatMAE pretraining $\rightarrow$ Enconder becomes specalized tot he geometry, noise structure, and spatial statistics of soil moisture imagery
+
+$$x \in \mathbf{R}^{C*H*W}$$
+
+where:
+* $C =$ Number of channels
+* $H, W =$ spatial dimensions
+
+image is split into non-overlapping patches of size $PxP$:
+
+$$N=\frac{H}{P} \frac{W}{P}$$
+
+Each patch is flattened:
+
+$$p_i \in \mathbb{R}^{P^{2}C}$$
+$$i = 1,...,N$$
+
+Mapped intop embedding space:
+$$e_i = W_p P_i +b+ u_i$$
+
+where:
+
+* $W_p=$ Path embedding matrix
+* $b = bias$
+* $u_i=$Positional encoding
+
+During masked autoencoding, large subset of patches is hidden:
+
+* $V =$ Visible path indices
+* $M=$ masked path indices
+  
+with $V \cup M = \{1,...N\}$
+
+Ecoder see visible patches: $z_V = f_{\theta}(e_V)$
+
+where $f_{\theta} =$ transformer encoder with parameters $\theta$
+
+Decoder then tries to reconstruct missing patches:
+
+$$\hat{p}_M=d_{\psi}(z_V,mask\_token)$$
+
+$\psi=$ decoder parameters
+
+Reconstruction loss standard:
+
+$$\mathcal{L}_{MAE}=\frac{1}{|M|}\sum_{i \in M} ||\hat{p}_i-p_i||_2^2$$
+
+Learned features:
+- Spatial smoothness
+- Local texture
+- Gradients
+- Mesoscale moisture structure
+- Channel relationships
+- Arrangements in SMAP imagery
+- Kinds of missingness/noise/statistical regularities that occur in the domain
+
+Therefore: $f_{}\theta: x \mapsto h$
+Map raw remote-sensing inputs into internal features $h$
+
+2. Supervised fine-tuning $\rightarrow$ Attach task-specific head and train model on labeled examples
+- Labeled data:
+
+$$\mathcal{D}=\{(x_{r,t},y_{r,t})\}^N_{n=1}$$
+
+where:
+
+* $x_n=$ SMAP-based input sensor
+* $y_n=$ Target label
+* Encoder producer latent tokens: $Z=f_{\theta}(x)$
+
+Thus, 
+$$x_{r,t} \in R^{C*H_r*W_r}$$
+$$y_{r,t} = SPI3_{r,t}$$

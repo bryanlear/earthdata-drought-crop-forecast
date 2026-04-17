@@ -1,6 +1,6 @@
 *.npz
 *.pt
-*.geojson
+
 *.tif
 *.gz
 outlier_analysis.py
@@ -13,3 +13,4 @@ eval_pretrain.py
 .DS_Store
 *.pth
 *.csv
+reference_data/fews_acute_food_insecurity_data

@@ -124,7 +124,7 @@ smap_multifeature       multifeature_tensor         multifeature_{train,val,test
                                                     multifeature_norm_stats.pt
                         ┌──────────────────────────► ├─ channel_stats {mean, std,
                         │  1. Spatial mask:          │    clip_lo, clip_hi}
-                        │     always-zero pixels     ├─ spatial_mask (8,64,64) bool
+                        │     always-zero pixels     ├─ spatial_mask (8,224,224) bool
                         │     identified per channel └─ feature_names
                         │
                         │  2. Clip Ch4,Ch5 at
@@ -143,7 +143,7 @@ smap_multifeature       multifeature_tensor         multifeature_{train,val,test
 
 ---
 
-Pretraining:
+### Pretraining:
 
 ![reconstruction pretraining](data_processing/plots/all_africa/reconstruction.png)
 
@@ -153,3 +153,28 @@ Pretraining:
 **Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)**
 
 ![Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)](reference_data/chirps_random_samples.png)
+
+---
+
+### Fine-tuning dataset
+
+**Goal:** Predict monthly drought class per Ethiopian region from SMAP soil-moisture imagery.
+
+**Input $x_n$:** $8$-channel SMAP monthly composite on $44 \times 43$ EASE-Grid 2.0 patch covering Ethiopia ($\sim 2.97$–$15.29$°N, $38.65$–$48.36$°E). Pixels outside target region are 0 via per-region spatial mask (point-in-polygon rasterization of GADM boundaries). Remaining within-region NaN gaps are $0$-filled.
+
+**Label $y_n$:** $3$-class SPI-3 drought classification from CHIRPS v3.0 area-weighted monthly precipitation:
+
+| Class | Condition | Description |
+|---|---|---|
+| 0 | SPI-3 $> -1.0$ | No drought |
+| 1 | $-1.5 <$ SPI-3 $\leq -1.0$ | Moderate drought |
+| 2 | SPI-3 $\leq -1.5$ | Severe / extreme drought |
+
+**Regions:** Afar, Amhara, Oromia, SNNPR, Somali, West Arsi
+
+**Temporal overlap:** $132$ months (April 2015 – March 2026), matching SMAP availability $\cap$ CHIRPS record.
+
+**Samples:** $132 \times 6 = 792$ labeled pairs $(x_n, y_n)$. Class imbalance: $87.1$% no drought, $8.3$% moderate, $4.5$% severe.
+
+---
+
