@@ -4,12 +4,13 @@ Per-region masked SMAP finetuning dataset.
 For each Ethiopian region (x6) and each of the 132 overlapping months --> produce one training sample:
 
     x  = 8-channel SMAP image (44×43) with pixels OUTSIDE the region set to 0
-    y  = SPI-3 drought class (0 = no drought, 1 = moderate, 2 = severe/extreme)
+    y  = binary drought label (0 = no drought, 1 = drought) from SPI-3
+        where drought = SPI-3 ≤ -1.0 (merges former moderate + severe classes)
 
 Output: ethiopia_smap_finetuning_dataset.npz
     images          — (792, 8, 44, 43)  float32   NaN-free, region-masked
-    labels_spi3     — (792,)            int8       drought class from SPI-3
-    labels_spi6     — (792,)            int8       drought class from SPI-6
+    labels_spi3     — (792,)            int8       binary drought from SPI-3
+    labels_spi6     — (792,)            int8       binary drought from SPI-6
     spi3_values     — (792,)            float32    raw SPI-3 for regression
     spi6_values     — (792,)            float32    raw SPI-6 for regression
     dates           — (792,)            str        ISO dates
@@ -116,8 +117,9 @@ def main():
             images[idx] = img
 
             row = df.iloc[t]
-            labels_spi3[idx] = int(row['drought_class_spi3'])
-            labels_spi6[idx] = int(row['drought_class_spi6'])
+            # Binary: 0 = no drought (SPI > -1.0), 1 = drought (SPI ≤ -1.0)
+            labels_spi3[idx] = int(row['drought_class_spi3'] >= 1)
+            labels_spi6[idx] = int(row['drought_class_spi6'] >= 1)
             spi3_values[idx] = float(row['spi_3'])
             spi6_values[idx] = float(row['spi_6'])
 
@@ -125,11 +127,10 @@ def main():
             sample_regions.append(slug)
             idx += 1
 
+        n_no  = (df['drought_class_spi3'] == 0).sum()
+        n_yes = (df['drought_class_spi3'] >= 1).sum()
         print(f'  {slug:12s}: {T} samples, '
-              f'drought(spi3) 0/1/2 = '
-              f'{(df["drought_class_spi3"]==0).sum()}/'
-              f'{(df["drought_class_spi3"]==1).sum()}/'
-              f'{(df["drought_class_spi3"]==2).sum()}')
+              f'no_drought/drought = {n_no}/{n_yes}')
 
     # ── Step 3: Summary stats ────────────────────────────────────────────
     print(f'\n--- Dataset summary ---')
@@ -137,9 +138,9 @@ def main():
     print(f'Labels:  {labels_spi3.shape}  classes={np.unique(labels_spi3)}')
 
     total = len(labels_spi3)
-    for cls in [0, 1, 2]:
+
         n = (labels_spi3 == cls).sum()
-        print(f'  class {cls}: {n:4d}  ({100 * n / total:.1f}%)')
+        print(f'  class {cls} ({name:11s}): {n:4d}  ({100 * n / total:.1f}%)')
 
     # Per-channel stats (across all samples, in-region pixels only)
     all_masks = np.zeros((N, H, W), dtype=bool)
