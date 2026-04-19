@@ -113,7 +113,3 @@ SatMAE architecture:
 ![Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)](reference_data/chirps_random_samples.png)
 
 ---
-
-
----
-
