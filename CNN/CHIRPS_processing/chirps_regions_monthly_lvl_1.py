@@ -55,21 +55,12 @@ COUNTRIES = {
     "eritrea": {
         "gadm_file": os.path.join(GADM_DIR, "eritrea", "gadm41_ERI_1.json"),
         "regions": {
-            "central_highlands":    ["Maekel"],
             "western_lowlands":     ["GashBarka"],
             "eastern_lowlands":     ["SemenawiKeyihBahri", "DebubawiKeyihBahri"],
             "southwestern_lowlands":["Anseba"],
-            "escarpment_green_belt":["Debub"],
         },
     },
-    "djibouti": {
-        "gadm_file": os.path.join(GADM_DIR, "djibouti", "gadm41_DJI_1.json"),
-        "regions": {
-            "coastal_arid":            ["Djiboutii", "Obock", "Tadjoura"],
-            "inland_pastoral_drylands":["Dikhil", "AliSabieh"],
-            "oasis_wadi_irrigated":    ["Arta"],
-        },
-    },
+
     "kenya": {
         "gadm_file": os.path.join(GADM_DIR, "kenya", "gadm41_KEN_1.json"),
         "regions": {
