@@ -14,3 +14,4 @@ eval_pretrain.py
 *.pth
 *.csv
 reference_data/fews_acute_food_insecurity_data
+CNN/model/strategy.md

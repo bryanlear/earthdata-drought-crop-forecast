@@ -37,6 +37,13 @@
 - Eastern pastoral drylands
 - Hills and Mountains
 
+### Ethiopia
+- Afar
+- Amhara
+- Oromia
+- Somali
+- West Arsi
+
 ---
 
 

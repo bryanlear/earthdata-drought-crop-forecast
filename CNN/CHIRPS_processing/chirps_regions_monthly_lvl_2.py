@@ -1,18 +1,7 @@
 """
-Extract area-weighted monthly mean precipitation for agro-ecological regions
-across the Horn of Africa from CHIRPS v3.0 Africa monthly GeoTIFFs.
-
-Countries: Somalia, Eritrea, Djibouti, Kenya, Sudan, South Sudan.
-Regions are agro-ecological zones (defined in CNN/regions.md), each
-approximated by dissolving the corresponding GADM admin-2 (district)
-boundaries.
-
-GADM level-2 files are expected under  CNN/gadm/<country>/
-
-Each region produces:
-  CNN/CHIRPS_processing/<country>/<region_slug>_chirps_monthly.csv
-  with columns:
-    date, precip_mm, spi_3, spi_6, drought_class_spi3, drought_class_spi6
+CHIRPS monthly precipitation CSVs for 5 Horn of Africa countries (GADM level-2).
+Steps: dissolve GADM admin-2 district boundaries per region → clip CHIRPS TIFs
+       → cosine-weighted mean → compute SPI-3 / SPI-6 → save CSV per region.
 """
 
 import os
@@ -26,7 +15,7 @@ import rasterio
 from rasterio.mask import mask as rio_mask
 from scipy.stats import gamma as gamma_dist, norm
 
-# ── paths ────────────────────────────────────────────────────────────────────
+
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 CNN_DIR = os.path.dirname(SCRIPT_DIR)                        # CNN/
 ROOT_DIR = os.path.dirname(CNN_DIR)                          # project root
@@ -35,10 +24,6 @@ GADM_DIR = os.path.join(CNN_DIR, "gadm")
 
 NODATA = -9999.0
 
-# ── country / region definitions ─────────────────────────────────────────────
-# Each country maps to:
-#   gadm_file : GADM level-2 GeoJSON
-#   regions   : dict  { region_slug : [list of NAME_2 values to dissolve] }
 
 COUNTRIES = {
     "somalia": {
@@ -384,17 +369,14 @@ COUNTRIES = {
     },
 }
 
-# ── helpers ──────────────────────────────────────────────────────────────────
 
 def load_gadm(gadm_file):
-    """Load a GADM level-2 GeoJSON."""
     if not os.path.exists(gadm_file):
         raise FileNotFoundError(f"GADM file not found: {gadm_file}")
     return gpd.read_file(gadm_file)
 
 
 def get_region_boundary(gadm, slug, name2_values, cache_dir):
-    """Dissolve NAME_2 districts into one boundary. Cache as GeoJSON."""
     cache = os.path.join(cache_dir, f"{slug}_boundary.geojson")
     if os.path.exists(cache):
         return gpd.read_file(cache)
@@ -421,7 +403,6 @@ def parse_date(filename):
 
 
 def cosine_weighted_mean(data, transform):
-    """Cos(lat)-weighted mean of a 2-D masked array."""
     nrows, ncols = data.shape
     row_indices = np.arange(nrows)
     lats = transform.f + (row_indices + 0.5) * transform.e
@@ -439,7 +420,6 @@ def cosine_weighted_mean(data, transform):
 
 
 def compute_spi(df):
-    """Add SPI-3, SPI-6, and drought class columns in-place."""
     for scale in (3, 6):
         col_acc = f"_acc_{scale}"
         col_spi = f"spi_{scale}"
@@ -482,7 +462,6 @@ def compute_spi(df):
 
 
 def extract_region(tifs, geom, label):
-    """Clip all tifs to geom and return a DataFrame."""
     records = []
     for i, tif_path in enumerate(tifs, 1):
         fname = os.path.basename(tif_path)
@@ -509,7 +488,6 @@ def extract_region(tifs, geom, label):
     return compute_spi(df)
 
 
-# ── main ─────────────────────────────────────────────────────────────────────
 
 def main():
     tifs = sorted(glob.glob(os.path.join(TIF_DIR, "chirps-v3.0.*.tif")))

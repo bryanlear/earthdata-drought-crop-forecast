@@ -1,19 +1,7 @@
 """
-Build monthly SMAP multi feature dataset for Ethiopia --> align to CHIRPS monthly drought labels
-
-Input:  raw SMAP L3 H5 files in /Volumes/bryan_SSD/spl3smp
-Output: ethiopia_smap_monthly.npz containing:
-    cube           — (T, 8, 44, 43) float32  monthly composites
-    dates          — (T,)  ISO date strings  (first of each month)
-    feature_names  — (8,)  channel names
-    lat_grid       — (44, 43) float32  EASE-Grid 2.0 centre latitudes
-    lon_grid       — (44, 43) float32  EASE-Grid 2.0 centre longitudes
-
-Months: only those present in CHIRPS CSVs AND with SMAP files (overlap: April 2015 – March 2026, ≈132 months).
-
-Channels (same 8 as pretraining pipeline):
-    soil_moisture_am, soil_moisture_pm, surface_temp_am, surface_temp_pm,
-    vegetation_water, vegetation_opacity, tb_polarization_diff, bulk_density
+Monthly SMAP 8-channel cube for Ethiopia (44×43 native window).
+Steps: find common months across CHIRPS CSVs and SMAP archive → build composite lat/lon
+       → extract Ethiopia H5 window per day → nanmean per month → save .npz.
 """
 
 import h5py
@@ -25,7 +13,7 @@ from collections import defaultdict
 
 import pandas as pd
 
-# ── paths ────────────────────────────────────────────────────────────────────
+
 SMAP_DATA_DIR = Path('/Volumes/bryan_SSD/spl3smp')
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_DIR = SCRIPT_DIR.parent
@@ -58,17 +46,13 @@ FEATURES = [
 ]
 N_FEATURES = len(FEATURES)
 
-# ── Ethiopia bounding box on EASE-Grid 2.0 (36 km) ──────────────────────────
-# Determined by union of valid AM+PM lat/lon across 20 sample files.
-# Covers lat ≈ 2.97–15.29°N, lon ≈ 32.68–48.36°E  (44 × 43 pixels)
+
 ETH_ROW_START, ETH_ROW_END = 149, 193
 ETH_COL_START, ETH_COL_END = 569, 612
 
 
-# ── helper functions ─────────────────────────────────────────────────────────────
 
 def parse_date(filename: str) -> datetime:
-    """SMAP_L3_SM_P_YYYYMMDD_*.h5 → datetime"""
     return datetime.strptime(filename.split('_')[4], '%Y%m%d')
 
 
@@ -78,10 +62,6 @@ def _crop(arr, r0=ETH_ROW_START, r1=ETH_ROW_END,
 
 
 def extract_ethiopia(file_path: Path) -> np.ndarray:
-    """Extract 8-channel Ethiopia patch from one SMAP H5 file.
-
-    Returns (C, H, W) float32 with NaN for missing / low-quality.
-    """
     H = ETH_ROW_END - ETH_ROW_START
     W = ETH_COL_END - ETH_COL_START
     result = np.full((N_FEATURES, H, W), np.nan, dtype=np.float32)
@@ -112,7 +92,6 @@ def extract_ethiopia(file_path: Path) -> np.ndarray:
 
 
 def get_lat_lon_grids() -> tuple[np.ndarray, np.ndarray]:
-    """Build composite lat/lon grids from multiple files to fill gaps."""
     h5_files = sorted(SMAP_DATA_DIR.glob('SMAP_L3_SM_P_*.h5'),
                       key=lambda p: parse_date(p.name))
     H = ETH_ROW_END - ETH_ROW_START
@@ -136,8 +115,6 @@ def get_lat_lon_grids() -> tuple[np.ndarray, np.ndarray]:
 
 
 def target_months() -> list[pd.Timestamp]:
-    """Return sorted list of months present in ALL CHIRPS CSVs that also
-    fall within SMAP availability (>= 2015-04)."""
     smap_start = pd.Timestamp('2015-04-01')
     month_sets = []
     for csv_name in CHIRPS_CSVS:
@@ -153,11 +130,6 @@ def target_months() -> list[pd.Timestamp]:
 
 
 def build_monthly_cube(months: list[pd.Timestamp]) -> np.ndarray:
-    """Composite daily SMAP files into monthly means for Ethiopia.
-
-    Returns (T, C, H, W) float32.
-    """
-    # Group all H5 files by (year, month)
     h5_files = sorted(SMAP_DATA_DIR.glob('SMAP_L3_SM_P_*.h5'),
                       key=lambda p: parse_date(p.name))
     by_month: dict[tuple[int, int], list[Path]] = defaultdict(list)
@@ -191,7 +163,6 @@ def build_monthly_cube(months: list[pd.Timestamp]) -> np.ndarray:
     return cube
 
 
-# ── main ─────────────────────────────────────────────────────────────────────
 
 if __name__ == '__main__':
     print('=== Building monthly SMAP dataset for Ethiopia ===\n')
