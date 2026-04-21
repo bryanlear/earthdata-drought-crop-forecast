@@ -101,7 +101,7 @@ SatMAE architecture:
 
 ---
 
-### Pretraining:
+### Pretraining SatMAE with SMAP L3:
 
 ![reconstruction pretraining](data_processing/plots/all_africa/reconstruction.png)
 
@@ -113,3 +113,10 @@ SatMAE architecture:
 ![Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)](reference_data/chirps_random_samples.png)
 
 ---
+
+
+### CIFAR-style ResNet-18 backbone CNN + Time-Series CV
+
+![diagram](ethiopia_smap_finetuning/CNN/model/checkpoints/plots/current_cnn_timeseries_cv.png)
+
+

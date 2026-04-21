@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Current CNN + Time-Series CV</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 24px;
+      background: transparent;
+      font-family: Arial, sans-serif;
+    }
+
+    #diagram {
+      display: inline-block;
+      background: transparent;
+      padding: 16px;
+    }
+
+    #diagram svg {
+      background: transparent !important;
+    }
+  </style>
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({
+      startOnLoad: true,
+      securityLevel: 'loose',
+      theme: 'default',
+      themeVariables: { background: 'transparent' },
+      flowchart: { useMaxWidth: false, htmlLabels: true }
+    });
+  </script>
+</head>
+<body>
+  <div id="diagram">
+<pre class="mermaid">flowchart TD
+  subgraph Sample[Per-sample representation]
+    A[Per-country monthly data\n8 SMAP channels + 1 CHIRPS + region masks] --> B[For each country, month, region\nbbox crop + resize to 64 x 64]
+    B --> C[Image tensor\n10 channels = 8 SMAP + 1 CHIRPS + 1 mask]
+    D[Month index\n1 to 12] --> E[Sin / cos month encoding\n2 values]
+  end
+
+  subgraph CNN[Current CNN binary classifier width = 0.25]
+    C --> F[CIFAR-style ResNet-18 backbone\nchannels 16 -> 32 -> 64 -> 128]
+    F --> G[AdaptiveAvgPool2d 1 x 1]
+    G --> H[Flatten pooled feature]
+    H --> I[Concatenate pooled feature\nwith month encoding]
+    E --> I
+    I --> J[MLP head\nDropout -> Linear -> ReLU -> Dropout -> Linear]
+    J --> K[2 logits\nnormal / drought]
+  end
+
+  subgraph Train[Training setup]
+    K --> L[CrossEntropyLoss\nsampler_power = 1.0\nloss_weight_power = 0.0]
+    L --> M[Adam optimizer\nReduceLROnPlateau\nEarly stopping on val F1 EMA]
+  end
+
+  subgraph CV[Rolling time-series cross-validation]
+    N1[Fold 1\ntrain 2015-04 to 2018-12\nval 2019]
+    N2[Fold 2\ntrain 2015-04 to 2019-12\nval 2020]
+    N3[Fold 3\ntrain 2015-04 to 2020-12\nval 2021]
+    N4[Fold 4\ntrain 2015-04 to 2021-12\nval 2022]
+    N5[Fold 5\ntrain 2015-04 to 2022-12\nval 2023]
+    N1 --> O[Same CNN + same reference hyperparameters]
+    N2 --> O
+    N3 --> O
+    N4 --> O
+    N5 --> O
+    O --> P[Aggregate fold metrics]
+  end
+
+  P --> Q[Untouched final holdout\ntest 2024-01 to 2026-03]
+</pre>
+  </div>
+</body>
+</html>

@@ -121,3 +121,13 @@
   T = 132 months (April 2015 – March 2026) for all 5 countries
 
   --- If labels are noisy, model will memorize visual patterns
+
+### Model (before implementing time-series CV 5 fold)
+
+- Current reference setup uses one `(country, month, region)` crop per sample, 10 input channels `(8 SMAP + 1 CHIRPS + 1 region mask)`, month-of-year sine/cosine encoding, and `width=0.25`
+- Current sample counts for this setup: `3255 train / 420 val / 945 test`
+- A 3-seed sweep with month encoding on (`seeds 43, 44, 45`) averaged: `macro F1=0.647`, `drought precision=0.343`, `drought recall=0.577`, `drought F1=0.430`, `accuracy=0.783`
+- Removing month encoding hurt on average over the same seeds: `macro F1=0.620`, `drought precision=0.310`, `drought recall=0.530`, `drought F1=0.390`, `accuracy=0.757`
+- Increasing width from `0.25` to `0.5` gave only a small average change: `macro F1 0.647 -> 0.660`, `drought F1 0.430 -> 0.433`, `accuracy 0.783 -> 0.813`, but shifted the operating point toward higher drought precision `0.343 -> 0.420` and lower drought recall `0.577 -> 0.500`
+- Decision: keep month encoding enabled and keep `width=0.25` as the default because the `0.5` model is only marginally better on aggregate score while missing more drought cases\
+

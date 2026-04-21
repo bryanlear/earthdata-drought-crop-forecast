@@ -1,0 +1,93 @@
+Device: cuda
+Sampler — drought samples: 366  normal-only samples: 2889  drought oversample weight: 7.89x
+Samples — train: 3255  val: 420  test: 945
+Trainable parameters: 705,378
+Month encoding: off
+Loss: CrossEntropyLoss(label_smoothing=0.0)
+Epoch   1  tr_loss=0.6690 tr_f1=0.608  vl_loss=0.7068 vl_f1=0.464 (ema=0.464)
+  ✓ best model saved (ema=0.464, val_f1=0.464)
+Epoch   2  tr_loss=0.6489 tr_f1=0.637  vl_loss=0.6071 vl_f1=0.525 (ema=0.482)
+  ✓ best model saved (ema=0.482, val_f1=0.525)
+Epoch   3  tr_loss=0.6189 tr_f1=0.661  vl_loss=0.6992 vl_f1=0.491 (ema=0.485)
+  ✓ best model saved (ema=0.485, val_f1=0.491)
+Epoch   4  tr_loss=0.6274 tr_f1=0.666  vl_loss=0.4676 vl_f1=0.588 (ema=0.516)
+  ✓ best model saved (ema=0.516, val_f1=0.588)
+Epoch   5  tr_loss=0.6085 tr_f1=0.675  vl_loss=0.7144 vl_f1=0.481 (ema=0.505)
+Epoch   6  tr_loss=0.6123 tr_f1=0.684  vl_loss=0.5567 vl_f1=0.532 (ema=0.514)
+Epoch   7  tr_loss=0.6151 tr_f1=0.666  vl_loss=0.6315 vl_f1=0.480 (ema=0.503)
+Epoch   8  tr_loss=0.5820 tr_f1=0.696  vl_loss=0.6679 vl_f1=0.521 (ema=0.509)
+Epoch   9  tr_loss=0.5860 tr_f1=0.698  vl_loss=0.9937 vl_f1=0.371 (ema=0.467)
+Epoch  10  tr_loss=0.5873 tr_f1=0.697  vl_loss=0.4336 vl_f1=0.610 (ema=0.510)
+Epoch  11  tr_loss=0.5693 tr_f1=0.720  vl_loss=0.5418 vl_f1=0.563 (ema=0.526)
+  ✓ best model saved (ema=0.526, val_f1=0.563)
+Epoch  12  tr_loss=0.5643 tr_f1=0.708  vl_loss=0.8010 vl_f1=0.476 (ema=0.511)
+Epoch  13  tr_loss=0.5578 tr_f1=0.716  vl_loss=0.5911 vl_f1=0.517 (ema=0.513)
+Epoch  14  tr_loss=0.5613 tr_f1=0.713  vl_loss=0.4750 vl_f1=0.597 (ema=0.538)
+  ✓ best model saved (ema=0.538, val_f1=0.597)
+Epoch  15  tr_loss=0.5529 tr_f1=0.728  vl_loss=0.5777 vl_f1=0.532 (ema=0.536)
+Epoch  16  tr_loss=0.5515 tr_f1=0.727  vl_loss=0.6556 vl_f1=0.550 (ema=0.541)
+  ✓ best model saved (ema=0.541, val_f1=0.550)
+Epoch  17  tr_loss=0.5618 tr_f1=0.705  vl_loss=0.4952 vl_f1=0.567 (ema=0.548)
+  ✓ best model saved (ema=0.548, val_f1=0.567)
+Epoch  18  tr_loss=0.5493 tr_f1=0.731  vl_loss=0.5559 vl_f1=0.553 (ema=0.550)
+  ✓ best model saved (ema=0.550, val_f1=0.553)
+Epoch  19  tr_loss=0.5439 tr_f1=0.726  vl_loss=0.5801 vl_f1=0.598 (ema=0.564)
+  ✓ best model saved (ema=0.564, val_f1=0.598)
+Epoch  20  tr_loss=0.5423 tr_f1=0.725  vl_loss=0.5166 vl_f1=0.550 (ema=0.560)
+Epoch  21  tr_loss=0.5093 tr_f1=0.749  vl_loss=0.5307 vl_f1=0.530 (ema=0.551)
+Epoch  22  tr_loss=0.5137 tr_f1=0.746  vl_loss=0.7113 vl_f1=0.505 (ema=0.537)
+Epoch  23  tr_loss=0.5141 tr_f1=0.750  vl_loss=0.4319 vl_f1=0.560 (ema=0.544)
+Epoch  24  tr_loss=0.5131 tr_f1=0.747  vl_loss=0.4255 vl_f1=0.574 (ema=0.553)
+Epoch  25  tr_loss=0.4993 tr_f1=0.754  vl_loss=0.4845 vl_f1=0.536 (ema=0.548)
+Epoch  26  tr_loss=0.5107 tr_f1=0.747  vl_loss=0.5682 vl_f1=0.527 (ema=0.542)
+Epoch  27  tr_loss=0.5139 tr_f1=0.749  vl_loss=0.4421 vl_f1=0.539 (ema=0.541)
+Epoch  28  tr_loss=0.4975 tr_f1=0.753  vl_loss=0.4213 vl_f1=0.534 (ema=0.539)
+Epoch  29  tr_loss=0.5061 tr_f1=0.746  vl_loss=0.6653 vl_f1=0.536 (ema=0.538)
+Epoch  30  tr_loss=0.4929 tr_f1=0.764  vl_loss=0.5512 vl_f1=0.557 (ema=0.544)
+Epoch  31  tr_loss=0.4845 tr_f1=0.763  vl_loss=0.4559 vl_f1=0.584 (ema=0.556)
+Epoch  32  tr_loss=0.4944 tr_f1=0.762  vl_loss=0.6847 vl_f1=0.468 (ema=0.529)
+Epoch  33  tr_loss=0.4977 tr_f1=0.757  vl_loss=0.4196 vl_f1=0.550 (ema=0.535)
+Epoch  34  tr_loss=0.4870 tr_f1=0.759  vl_loss=0.5762 vl_f1=0.539 (ema=0.536)
+Epoch  35  tr_loss=0.4731 tr_f1=0.782  vl_loss=0.5797 vl_f1=0.539 (ema=0.537)
+Epoch  36  tr_loss=0.4889 tr_f1=0.764  vl_loss=0.4271 vl_f1=0.602 (ema=0.557)
+Epoch  37  tr_loss=0.4851 tr_f1=0.774  vl_loss=0.4484 vl_f1=0.568 (ema=0.560)
+Epoch  38  tr_loss=0.5040 tr_f1=0.765  vl_loss=0.4535 vl_f1=0.591 (ema=0.569)
+  ✓ best model saved (ema=0.569, val_f1=0.591)
+Epoch  39  tr_loss=0.4969 tr_f1=0.759  vl_loss=0.5810 vl_f1=0.555 (ema=0.565)
+Epoch  40  tr_loss=0.4984 tr_f1=0.753  vl_loss=0.6044 vl_f1=0.518 (ema=0.551)
+Epoch  41  tr_loss=0.4908 tr_f1=0.761  vl_loss=0.6428 vl_f1=0.472 (ema=0.527)
+Epoch  42  tr_loss=0.4836 tr_f1=0.770  vl_loss=0.5322 vl_f1=0.568 (ema=0.539)
+Epoch  43  tr_loss=0.4544 tr_f1=0.788  vl_loss=0.4206 vl_f1=0.536 (ema=0.538)
+Epoch  44  tr_loss=0.4638 tr_f1=0.782  vl_loss=0.5533 vl_f1=0.549 (ema=0.541)
+Epoch  45  tr_loss=0.4655 tr_f1=0.775  vl_loss=0.4412 vl_f1=0.614 (ema=0.563)
+Epoch  46  tr_loss=0.4429 tr_f1=0.799  vl_loss=0.3859 vl_f1=0.544 (ema=0.558)
+Epoch  47  tr_loss=0.4597 tr_f1=0.780  vl_loss=0.5537 vl_f1=0.507 (ema=0.542)
+Epoch  48  tr_loss=0.4502 tr_f1=0.785  vl_loss=0.6368 vl_f1=0.517 (ema=0.535)
+Epoch  49  tr_loss=0.4375 tr_f1=0.800  vl_loss=0.3808 vl_f1=0.574 (ema=0.546)
+Epoch  50  tr_loss=0.4577 tr_f1=0.785  vl_loss=0.3591 vl_f1=0.584 (ema=0.558)
+Epoch  51  tr_loss=0.4400 tr_f1=0.793  vl_loss=0.5457 vl_f1=0.526 (ema=0.548)
+Epoch  52  tr_loss=0.4471 tr_f1=0.790  vl_loss=0.4554 vl_f1=0.581 (ema=0.558)
+Epoch  53  tr_loss=0.4477 tr_f1=0.791  vl_loss=0.7579 vl_f1=0.481 (ema=0.535)
+Epoch  54  tr_loss=0.4512 tr_f1=0.792  vl_loss=0.3898 vl_f1=0.607 (ema=0.557)
+Epoch  55  tr_loss=0.4518 tr_f1=0.793  vl_loss=0.4698 vl_f1=0.562 (ema=0.558)
+Epoch  56  tr_loss=0.4377 tr_f1=0.791  vl_loss=0.4966 vl_f1=0.572 (ema=0.562)
+Epoch  57  tr_loss=0.4402 tr_f1=0.795  vl_loss=0.4748 vl_f1=0.549 (ema=0.558)
+Epoch  58  tr_loss=0.4402 tr_f1=0.797  vl_loss=0.4533 vl_f1=0.569 (ema=0.562)
+Epoch  59  tr_loss=0.4464 tr_f1=0.794  vl_loss=0.6993 vl_f1=0.453 (ema=0.529)
+Epoch  60  tr_loss=0.4222 tr_f1=0.816  vl_loss=0.5644 vl_f1=0.532 (ema=0.530)
+Epoch  61  tr_loss=0.4335 tr_f1=0.797  vl_loss=0.4420 vl_f1=0.583 (ema=0.546)
+Epoch  62  tr_loss=0.4237 tr_f1=0.812  vl_loss=0.4604 vl_f1=0.574 (ema=0.554)
+Epoch  63  tr_loss=0.4253 tr_f1=0.815  vl_loss=0.5048 vl_f1=0.570 (ema=0.559)
+Early stopping at epoch 63 (no improvement for 25 epochs)
+History saved → /workspace/earthdata-drought-crop-forecast/CNN/model/checkpoints/history.json
+
+=== Test-set evaluation (best checkpoint) ===
+              precision    recall  f1-score   support
+
+      normal       0.91      0.81      0.86       809
+     drought       0.33      0.54      0.41       136
+
+    accuracy                           0.77       945
+   macro avg       0.62      0.68      0.64       945
+weighted avg       0.83      0.77      0.80       945
+

@@ -1,0 +1,46 @@
+Device: cuda
+Sampler — drought samples: 366  normal-only samples: 2889  raw drought share: 11.24%  drought oversample weight: 4.71x  effective drought share: 37.37%
+Samples — train: 3255  val: 420  test: 945
+Trainable parameters: 705,442
+Month encoding: on
+Loss: CrossEntropyLoss(label_smoothing=0.0)
+Epoch   1  tr_loss=0.6408 tr_f1=0.586  vl_loss=0.3800 vl_f1=0.598 (ema=0.598)
+  ✓ best model saved (ema=0.598, val_f1=0.598)
+Epoch   2  tr_loss=0.6061 tr_f1=0.633  vl_loss=0.4025 vl_f1=0.573 (ema=0.590)
+Epoch   3  tr_loss=0.5977 tr_f1=0.658  vl_loss=0.4477 vl_f1=0.535 (ema=0.574)
+Epoch   4  tr_loss=0.5755 tr_f1=0.665  vl_loss=0.4452 vl_f1=0.586 (ema=0.578)
+Epoch   5  tr_loss=0.5983 tr_f1=0.630  vl_loss=0.4165 vl_f1=0.534 (ema=0.564)
+Epoch   6  tr_loss=0.5747 tr_f1=0.664  vl_loss=0.4923 vl_f1=0.603 (ema=0.576)
+Epoch   7  tr_loss=0.5926 tr_f1=0.649  vl_loss=0.3343 vl_f1=0.586 (ema=0.579)
+Epoch   8  tr_loss=0.5528 tr_f1=0.695  vl_loss=0.6134 vl_f1=0.557 (ema=0.572)
+Epoch   9  tr_loss=0.5500 tr_f1=0.676  vl_loss=0.4358 vl_f1=0.576 (ema=0.573)
+Epoch  10  tr_loss=0.5548 tr_f1=0.681  vl_loss=0.4757 vl_f1=0.597 (ema=0.580)
+Epoch  11  tr_loss=0.5659 tr_f1=0.670  vl_loss=0.5474 vl_f1=0.504 (ema=0.557)
+Epoch  12  tr_loss=0.5707 tr_f1=0.671  vl_loss=0.5195 vl_f1=0.549 (ema=0.555)
+Epoch  13  tr_loss=0.5516 tr_f1=0.694  vl_loss=0.6276 vl_f1=0.502 (ema=0.539)
+Epoch  14  tr_loss=0.5599 tr_f1=0.679  vl_loss=0.3132 vl_f1=0.635 (ema=0.568)
+Epoch  15  tr_loss=0.5620 tr_f1=0.681  vl_loss=0.3801 vl_f1=0.592 (ema=0.575)
+Epoch  16  tr_loss=0.5625 tr_f1=0.687  vl_loss=0.4003 vl_f1=0.577 (ema=0.576)
+Epoch  17  tr_loss=0.5402 tr_f1=0.682  vl_loss=0.4045 vl_f1=0.576 (ema=0.576)
+Epoch  18  tr_loss=0.5530 tr_f1=0.685  vl_loss=0.4230 vl_f1=0.612 (ema=0.587)
+Epoch  19  tr_loss=0.5601 tr_f1=0.704  vl_loss=0.4753 vl_f1=0.607 (ema=0.593)
+Epoch  20  tr_loss=0.5437 tr_f1=0.702  vl_loss=0.3598 vl_f1=0.569 (ema=0.585)
+Epoch  21  tr_loss=0.5472 tr_f1=0.701  vl_loss=0.4923 vl_f1=0.556 (ema=0.577)
+Epoch  22  tr_loss=0.5358 tr_f1=0.708  vl_loss=0.5571 vl_f1=0.533 (ema=0.564)
+Epoch  23  tr_loss=0.5276 tr_f1=0.705  vl_loss=0.3830 vl_f1=0.594 (ema=0.573)
+Epoch  24  tr_loss=0.5184 tr_f1=0.722  vl_loss=0.3895 vl_f1=0.578 (ema=0.574)
+Epoch  25  tr_loss=0.5015 tr_f1=0.736  vl_loss=0.4017 vl_f1=0.619 (ema=0.588)
+Epoch  26  tr_loss=0.5052 tr_f1=0.732  vl_loss=0.3868 vl_f1=0.594 (ema=0.590)
+Early stopping at epoch 26 (no improvement for 25 epochs)
+History saved → /workspace/earthdata-drought-crop-forecast/CNN/model/checkpoints/history.json
+
+=== Test-set evaluation (best checkpoint) ===
+              precision    recall  f1-score   support
+
+      normal       0.88      0.90      0.89       809
+     drought       0.33      0.29      0.31       136
+
+    accuracy                           0.81       945
+   macro avg       0.61      0.60      0.60       945
+weighted avg       0.80      0.81      0.81       945
+
