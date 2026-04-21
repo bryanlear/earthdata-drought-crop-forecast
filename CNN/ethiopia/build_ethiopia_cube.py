@@ -220,7 +220,6 @@ def build_chirps_cube(months: list,
     return cube
 
 
-# Region masks
 
 def _polygons_from_geojson(geojson: dict) -> list[np.ndarray]:
     polys = []

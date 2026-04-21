@@ -14,7 +14,7 @@ from torch.utils.data import Dataset, DataLoader
 
 R_MAX = 6
 
-COUNTRIES = ['eritrea', 'kenya', 'somalia', 'south_sudan', 'sudan', 'ethiopia']
+COUNTRIES = ['eritrea', 'kenya', 'somalia', 'south_sudan', 'sudan', 'ethiopia', 'djibouti']
 
 _CNN_DIR = Path(__file__).resolve().parent.parent
 COUNTRY_NPZ_DIRS: dict[str, Path] = {
@@ -80,11 +80,11 @@ class DroughtDataset(Dataset):
                 continue
 
             npz          = np.load(npz_path, allow_pickle=True)
-            smap_cube    = npz['smap_cube']    # (T, 8, 64, 64)
-            chirps_cube  = npz['chirps_cube']  # (T, 64, 64)
-            region_mask  = npz['region_mask']  # (R, 64, 64)  bool
+            smap_cube    = npz['smap_cube']
+            chirps_cube  = npz['chirps_cube']
+            region_mask  = npz['region_mask']
             region_names = list(npz['region_names'])
-            dates        = npz['dates']        # (T,) 'YYYY-MM-DD'
+            dates        = npz['dates']
             R = len(region_names)
 
             labels_TR = load_labels(_csv_dir, region_names, dates, label_col)
@@ -98,7 +98,7 @@ class DroughtDataset(Dataset):
                     [smap_cube[t], chirps_cube[t][np.newaxis]], axis=0
                 ).astype(np.float32)
 
-                # Pad masks and labels to R_MAX
+
                 masks_pad  = np.zeros((R_MAX, 64, 64), dtype=bool)
                 labels_pad = np.full(R_MAX, -100, dtype=np.int64)
                 masks_pad[:R]  = region_mask

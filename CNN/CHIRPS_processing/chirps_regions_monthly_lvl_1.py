@@ -17,8 +17,8 @@ from scipy.stats import gamma as gamma_dist, norm
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CNN_DIR = os.path.dirname(SCRIPT_DIR)                        # CNN/
-ROOT_DIR = os.path.dirname(CNN_DIR)                          # project root
+CNN_DIR = os.path.dirname(SCRIPT_DIR)
+ROOT_DIR = os.path.dirname(CNN_DIR)
 TIF_DIR = os.path.join(ROOT_DIR, "reference_data")
 GADM_DIR = os.path.join(CNN_DIR, "gadm")
 
@@ -97,6 +97,14 @@ COUNTRIES = {
             "nile_sobat_river":         ["UpperNile"],
             "eastern_pastoral_drylands":["EasternEquatoria"],
             "hills_and_mountains":      ["NorthBahr-al-Ghazal", "Warap"],
+        },
+    },
+    "djibouti": {
+        "gadm_file": os.path.join(GADM_DIR, "djibouti", "gadm41_DJI_1.json"),
+        "regions": {
+            "coastal_arid":              ["Djiboutii", "Arta", "Obock"],
+            "inland_pastoral_drylands":  ["AliSabieh", "Tadjoura"],
+            "oasis_wadi_irrigated":      ["Dikhil"],
         },
     },
 }
@@ -181,12 +189,12 @@ def compute_spi(df):
 
         df.drop(columns=[col_acc], inplace=True)
 
-        # drought classification (0=no drought, 1=moderate, 2=severe/extreme)
+
         cls_col = f"drought_class_spi{scale}"
         df[cls_col] = np.where(
             df[col_spi].isna(), np.nan,
-            np.where(df[col_spi] <= -1.5, 2,         # severe + extreme
-            np.where(df[col_spi] <= -1.0, 1, 0))     # moderate / no drought
+            np.where(df[col_spi] <= -1.5, 2,
+            np.where(df[col_spi] <= -1.0, 1, 0))
         )
         df[cls_col] = df[cls_col].astype("Int64")
 
@@ -234,7 +242,7 @@ def main():
         out_dir = os.path.join(SCRIPT_DIR, country)
         os.makedirs(out_dir, exist_ok=True)
 
-        # cache boundaries next to the GADM source file
+
         cache_dir = os.path.dirname(cfg["gadm_file"])
 
         for slug, name1_values in cfg["regions"].items():

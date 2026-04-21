@@ -44,6 +44,10 @@
 - Somali
 - West Arsi
 
+### Djubouti
+- Coastal arid belt
+- Inland pastoral drylands
+- Pasis / wasi irrigated pockets
 ---
 
 
@@ -115,3 +119,5 @@
   | `lat_grid` / `lon_grid` | `(64, 64)` | float32 | SMAP cell-centered coordinates |
 
   T = 132 months (April 2015 – March 2026) for all 5 countries
+
+  --- If labels are noisy, model will memorize visual patterns

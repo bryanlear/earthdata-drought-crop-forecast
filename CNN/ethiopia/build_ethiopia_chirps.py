@@ -108,7 +108,7 @@ def compute_spi(df):
         cls_col = f"drought_class_spi{scale}"
         df[cls_col] = np.where(
             df[col_spi].isna(), np.nan,
-            np.where(df[col_spi] <= -1.5, 2,          # severe + extreme
+            np.where(df[col_spi] <= -1.5, 2,
             np.where(df[col_spi] <= -1.0, 1, 0))
         )
         df[cls_col] = df[cls_col].astype("Int64")

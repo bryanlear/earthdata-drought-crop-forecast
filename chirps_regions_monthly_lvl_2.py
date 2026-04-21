@@ -17,8 +17,8 @@ from scipy.stats import gamma as gamma_dist, norm
 
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
-CNN_DIR = os.path.dirname(SCRIPT_DIR)                        # CNN/
-ROOT_DIR = os.path.dirname(CNN_DIR)                          # project root
+CNN_DIR = os.path.dirname(SCRIPT_DIR)
+ROOT_DIR = os.path.dirname(CNN_DIR)
 TIF_DIR = os.path.join(ROOT_DIR, "reference_data")
 GADM_DIR = os.path.join(CNN_DIR, "gadm")
 
@@ -29,46 +29,40 @@ COUNTRIES = {
     "somalia": {
         "gadm_file": os.path.join(GADM_DIR, "somalia", "gadm41_SOM_2.json"),
         "regions": {
-            # Northwest agro-pastoral belt  (Awdal + Woqooyi Galbeed + Togdheer)
             "northwest_agropastoral": [
-                "Baki", "Boorama", "Lughaya", "Zeylac",            # Awdal
-                "Berbera", "Gabiley", "Hargeysa",                   # WoqooyiGalbeed
-                "Burao", "Buuhoodle", "Oodweyne", "Sheekh",         # Togdheer
+                "Baki", "Boorama", "Lughaya", "Zeylac",
+                "Berbera", "Gabiley", "Hargeysa",
+                "Burao", "Buuhoodle", "Oodweyne", "Sheekh",
             ],
-            # Northeast dry pastoral belt  (Sanaag + Sool + Bari + Nugaal)
             "northeast_dry_pastoral": [
-                "Badhan", "Ceel-Afwein", "Ceerigaabo",              # Sanaag
-                "Caynabo", "Lascaanod", "Taleex", "Xudun",          # Sool
-                "Bander-Beyla", "Bosaaso", "Calawla",                # Bari
+                "Badhan", "Ceel-Afwein", "Ceerigaabo",
+                "Caynabo", "Lascaanod", "Taleex", "Xudun",
+                "Bander-Beyla", "Bosaaso", "Calawla",
                 "Iskushuban", "Qandala", "Qardho",
-                "Burtinle", "Eyl", "Garoowe",                       # Nugaal
+                "Burtinle", "Eyl", "Garoowe",
             ],
-            # Central pastoral belt  (Mudug + Galguduud + Hiiraan)
             "central_pastoral": [
-                "Gaalkacayo", "Goldogob", "Hobyo",                   # Mudug
+                "Gaalkacayo", "Goldogob", "Hobyo",
                 "Jariiban", "Xarardheere",
-                "Caabudwaaq", "Cadaado", "CeelBuur",                # Galguduud
+                "Caabudwaaq", "Cadaado", "CeelBuur",
                 "CeelDheer", "Dhuusamareeb",
-                "BeledWeyn", "BuuloBurdo", "Jalalaqsi",             # Hiiraan
+                "BeledWeyn", "BuuloBurdo", "Jalalaqsi",
             ],
-            # Juba riverine belt  (Jubba Dhexe + Jubba Hoose + Gedo)
             "juba_riverine": [
-                "Bu'aale", "Jilib", "Saakow",                       # JubbadaDhexe
-                "Afmadow", "Badhaadhe", "Jamaame", "Kismaayo",      # JubbadaHoose
-                "Baar-Dheere", "BeledXaawo", "CeelWaaq",            # Gedo
+                "Bu'aale", "Jilib", "Saakow",
+                "Afmadow", "Badhaadhe", "Jamaame", "Kismaayo",
+                "Baar-Dheere", "BeledXaawo", "CeelWaaq",
                 "Dolow", "Garbahaaray", "Luuk",
             ],
-            # Shabelle riverine belt  (Shabelle Dhexe + Shabelle Hoose + Banaadir)
             "shabelle_riverine": [
-                "Aadan", "Balcad", "Cadale", "Jawhar",              # ShabeellahaDhexe
-                "Afgooye", "Baraawe", "Kuntuwaaray",                 # ShabeellahaHoose
+                "Aadan", "Balcad", "Cadale", "Jawhar",
+                "Afgooye", "Baraawe", "Kuntuwaaray",
                 "Marka", "Qoryooley", "Sablale", "WanlaWeyn",
-                "Mogadisho",                                         # Banaadir
+                "Mogadisho",
             ],
-            # Southern rainfed agro-pastoral belt  (Bay + Bakool)
             "southern_rainfed_agropastoral": [
-                "Baydhabo", "BuurXakaba", "Diinsoor", "QansaxDheere",  # Bay
-                "CeelBarde", "RabDhuure", "Tiyeeglow",                # Bakool
+                "Baydhabo", "BuurXakaba", "Diinsoor", "QansaxDheere",
+                "CeelBarde", "RabDhuure", "Tiyeeglow",
                 "Wajid", "Xudur",
             ],
         },
@@ -76,30 +70,25 @@ COUNTRIES = {
     "eritrea": {
         "gadm_file": os.path.join(GADM_DIR, "eritrea", "gadm41_ERI_2.json"),
         "regions": {
-            # Central highlands  (Maekel)
             "central_highlands": [
                 "AsmaraCity", "Berikh", "GhalaNefhi", "Serejeka",
             ],
-            # Western lowlands  (Gash Barka)
             "western_lowlands": [
                 "Akordat", "Barentu", "Dghe", "Forto", "Gogne",
                 "Haykota", "La`ElayGash", "LogoAnseba", "Mansura",
                 "Mogolo", "Omhajer", "Shemboko", "Teseneye",
             ],
-            # Eastern lowlands  (Semienawi Keyih Bahri + Debubawi Keyih Bahri)
             "eastern_lowlands": [
-                "Afabet", "Dahlak", "Foro", "Ghelaelo'",            # SemenawiKeyihBahri
+                "Afabet", "Dahlak", "Foro", "Ghelaelo'",
                 "Ghida`e", "Karora", "Mitswa`eCity", "Nakfa", "Sheib",
-                "Areta'", "CentralSouthernRedSea",                   # DebubawiKeyihBahri
+                "Areta'", "CentralSouthernRedSea",
                 "SouthSouthernRedSea",
             ],
-            # Southwestern lowlands  (Anseba)
             "southwestern_lowlands": [
                 "AdiTeklezan", "Asmat", "Elabered", "Gheleb",
                 "Habero", "Hagaz", "Halhal", "Keren",
                 "KerkeBet", "Sel`a",
             ],
-            # Escarpment / Green belt  (Debub)
             "escarpment_green_belt": [
                 "AdiKeyih", "AdiKwala", "Areza", "Dekemehare",
                 "Dibarwa", "KudoBu`er", "MayMine", "Mendefera",
@@ -110,172 +99,116 @@ COUNTRIES = {
     "djibouti": {
         "gadm_file": os.path.join(GADM_DIR, "djibouti", "gadm41_DJI_2.json"),
         "regions": {
-            # Coastal arid belt  (Djibouti city + Obock + Tadjoura)
             "coastal_arid": [
-                "Djiboutii",                                         # Djiboutii
-                "Adailou", "Dadda'to", "Khôr'Angar",                # Obock
+                "Djiboutii",
+                "Adailou", "Dadda'to", "Khôr'Angar",
                 "Moulhoule", "Obock",
-                "Balho", "Dorra", "Lac'Assal",                      # Tadjoura
+                "Balho", "Dorra", "Lac'Assal",
                 "MousaAli", "Randa", "Tadjoura",
             ],
-            # Inland pastoral drylands  (Dikhil + Ali Sabieh)
             "inland_pastoral_drylands": [
-                "AsEyla", "Dikhil", "Galafi", "Yuboki",             # Dikhil
-                "AliAdde", "AliSabieh", "Holhol",                   # AliSabieh
+                "AsEyla", "Dikhil", "Galafi", "Yuboki",
+                "AliAdde", "AliSabieh", "Holhol",
             ],
-            # Oasis / Wadi irrigated pockets  (Arta)
             "oasis_wadi_irrigated": [
-                "Arta", "Yuboki",                                    # Arta
+                "Arta", "Yuboki",
             ],
         },
     },
     "kenya": {
         "gadm_file": os.path.join(GADM_DIR, "kenya", "gadm41_KEN_2.json"),
         "regions": {
-            # Northern arid pastoral belt
             "northern_arid_pastoral": [
-                # Turkana
                 "Loima", "TurkanaCentral", "TurkanaEast",
                 "TurkanaNorth", "TurkanaSouth", "TurkanaWest", "unknown2",
-                # Marsabit
                 "Laisamis", "Moyale", "NorthHorr", "Saku",
-                # Mandera
                 "Banissa", "Lafey", "ManderaEast", "ManderaNorth",
                 "ManderaSouth", "ManderaWest", "unknown1",
-                # Wajir
                 "Eldas", "Tarbaj", "WajirEast", "WajirNorth",
                 "WajirSouth", "WajirWest",
-                # Samburu
                 "SamburuEast", "SamburuNorth", "SamburuWest",
-                # Isiolo
                 "IsioloNorth", "IsioloSouth",
             ],
-            # Eastern semi-arid belt
             "eastern_semiarid": [
-                # Garissa
                 "Balambala", "Daadab", "Fafi", "GarissaTownship",
                 "Ijara", "Lagdera",
-                # Tana River
                 "Bura", "Galole", "Garsen",
-                # Kitui
                 "KituiCentral", "KituiEast", "KituiRural", "KituiSouth",
                 "KituiWest", "MwingiCentral", "MwingiNorth", "MwingiWest",
-                # Makueni
                 "Kaiti", "KibweziEast", "KibweziWest", "Kilome",
                 "Makueni", "Mbooni",
-                # Machakos
                 "Kangundo", "Kathiani", "MachakosTown", "Masinga",
                 "Matungulu", "Mavoko", "Mwala", "Yatta", "unknown7",
-                # Embu
                 "Manyatta", "MbeereNorth", "MbeereSouth", "Runyenjes",
-                # Tharaka-Nithi
                 "Chuka/Igambang'Ombe", "IgembeSouth", "Maara", "Tharaka",
-                # Meru
                 "Buuri", "CentralImenti", "IgembeCentral", "IgembeNorth",
                 "IgembeSouth", "NorthImenti", "SouthImenti",
                 "TiganiaEast", "TiganiaWest", "unknown5",
             ],
-            # Central highlands
             "central_highlands": [
-                # Nyeri
                 "Kieni", "Mathira", "Mukurweini", "NyeriTown", "Othaya", "Tetu",
-                # Kirinyaga
                 "Gichugu", "KirinyagaCentral", "Mwea", "Ndia",
-                # Murang'a
                 "Gatanga", "Kandara", "Kangema", "Kigumo",
                 "Kiharu", "Maragwa", "Mathioya",
-                # Kiambu
                 "GatunduNorth", "GatunduSouth", "Githunguri", "Juja",
                 "Kabete", "Kiambaa", "Kiambu", "Kikuyu",
                 "Lari", "Limuru", "Ruiru", "ThikaTown",
-                # Nyandarua
                 "Kinangop", "Kipipiri", "Ndaragwa", "OlJorok", "OlKalou",
-                # Nairobi
                 "DagorettiNorth", "DagorettiSouth", "EmbakasiCentral",
                 "EmbakasiEast", "EmbakasiNorth", "EmbakasiSouth",
                 "EmbakasiWest", "Kamukunji", "Kasarani", "Kibra",
                 "Langata", "Makadara", "Mathare", "Roysambu",
                 "Ruaraka", "Starehe", "Westlands",
-                # Laikipia
                 "LaikipiaEast", "LaikipiaNorth", "LaikipiaWest",
             ],
-            # Rift valley highlands
             "rift_valley_highlands": [
-                # Nakuru
                 "Bahati", "Gilgil", "KuresoiNorth", "KuresoiSouth",
                 "Molo", "Naivasha", "NakuruTownEast", "NakuruTownWest",
                 "Njoro", "Rongai", "Subukia",
-                # Narok
                 "EmuruaDikirr", "Kilgoris", "NarokEast", "NarokNorth",
                 "NarokSouth", "NarokWest",
-                # Kajiado
                 "KajiadoCentral", "KajiadoEast", "KajiadoNorth",
                 "KajiadoSouth", "KajiadoWest",
-                # Baringo
                 "805", "BaringoCentral", "BaringoNorth", "BaringoSouth",
                 "EldamaRavine", "Mogotio", "Tiaty",
-                # Elgeyo-Marakwet
                 "KeiyoNorth", "KeiyoSouth", "MarakwetEast", "MarakwetWest",
-                # Uasin Gishu
                 "Ainabkoi", "Kapseret", "Kesses", "Moiben", "Soy", "Turbo",
-                # Nandi
                 "Aldai", "Chesumei", "Emgwen", "Mosop", "NandiHills", "Tinderet",
-                # Kericho
                 "Ainamoi", "Belgut", "Bureti", "KipkelionEast",
                 "KipkelionWest", "Sigowet/Soin",
-                # Bomet
                 "BometCentral", "BometEast", "Chepalungu", "Konoin", "Sotik",
-                # Trans Nzoia
                 "Cherangany", "Endebess", "Kiminini", "Kwanza",
                 "Saboti", "unknown4",
-                # West Pokot
                 "Kacheliba", "Kapenguria", "PokotSouth", "Sigor", "unknown3",
             ],
-            # Western high-rainfall farming belt
             "western_high_rainfall": [
-                # Kakamega
                 "Butere", "Ikolomani", "Khwisero", "Lugari", "Lurambi",
                 "Malava", "Matungu", "MumiasEast", "MumiasWest",
                 "Navakholo", "Shinyalu",
-                # Bungoma
                 "Bumula", "Kabuchai", "Kanduyi", "Kimilili", "Likuyani",
                 "Lugari", "Mt.Elgon", "Sirisia", "Tongaren",
                 "WebuteWest", "WebuyeEast",
-                # Busia
                 "Budalangi", "Butula", "Funyula", "Matayos",
                 "Nambale", "TesoNorth", "TesoSouth",
-                # Vihiga
                 "Emuhaya", "Hamisi", "Luanda", "Sabatia", "Vihiga",
-                # Siaya
                 "AlegoUsonga", "Bondo", "Gem", "Rarieda", "Ugenya", "Ugunja",
-                # Kisumu
                 "KisumuCentral", "KisumuEast", "KisumuWest",
                 "Muhoroni", "Nyakach", "Nyando", "Seme",
-                # Homa Bay
                 "HomaBayTown", "KabondoKasipul", "Karachuonyo",
                 "Kasipul", "Mbita", "Ndhiwa", "Rangwe", "Suba", "unknown6",
-                # Migori
                 "Awendo", "KuriaEast", "KuriaWest", "Nyatike",
                 "Rongo", "SunaEast", "SunaWest", "Uriri",
-                # Kisii
                 "Bobasi", "BomachogeBorabu", "BomachogeChache", "Bonchari",
                 "KitutuChacheNorth", "KitutuChacheSouth",
                 "NyaribariChache", "NyaribariMasaba", "SouthMugirango",
-                # Nyamira
                 "Borabu", "KitutuMasaba", "NorthMugirango", "WestMugirango",
             ],
-            # Coastal lowlands
             "coastal_lowlands": [
-                # Mombasa
                 "Changamwe", "Jomvu", "Kisauni", "Likoni", "Mvita", "Nyali",
-                # Kilifi
                 "Ganze", "Kaloleni", "KilifiNorth", "KilifiSouth",
                 "Magarini", "Malindi", "Rabai",
-                # Kwale
                 "Kinango", "Lungalunga", "Matuga", "Msambweni",
-                # Lamu
                 "LamuEast", "LamuWest",
-                # Taita Taveta
                 "Mwatate", "Taveta", "Voi", "Wundanyi",
             ],
         },
@@ -283,49 +216,43 @@ COUNTRIES = {
     "sudan": {
         "gadm_file": os.path.join(GADM_DIR, "sudan", "gadm41_SDN_2.json"),
         "regions": {
-            # Desert belt  (Northern + River Nile)
             "desert": [
-                "Addabah", "Dongola", "Merawi", "WadiHalfa",        # Northern
-                "AbuHamad", "AdDamer", "AlMatammah",                 # RiverNile
+                "Addabah", "Dongola", "Merawi", "WadiHalfa",
+                "AbuHamad", "AdDamer", "AlMatammah",
                 "Atbara", "Berber", "Shendi",
             ],
-            # Semi-desert belt  (Red Sea + Kassala + Khartoum)
             "semi_desert": [
-                "Halayeb", "PortSudan", "Sinkat", "Tokar",          # RedSea
-                "AlGash", "Hamashkorieb", "Kassala",                 # Kassala
+                "Halayeb", "PortSudan", "Sinkat", "Tokar",
+                "AlGash", "Hamashkorieb", "Kassala",
                 "NahrAtbara", "Seteet",
-                "Karary", "Khartoum", "KhartoumBahri",              # Khartoum
+                "Karary", "Khartoum", "KhartoumBahri",
                 "Omdurman", "ShargEnNile", "SouthKhartoum", "UmBadda",
             ],
-            # Low-rainfall savanna  (North Kurdufan + North Darfur + Al Qadarif)
             "low_rainfall_savanna": [
-                "Bara", "JebratalSheikh", "Sheikan",                # NorthKurdufan
+                "Bara", "JebratalSheikh", "Sheikan",
                 "Sowdari", "UmRawaba",
-                "AlFasher", "Kabkabiya", "Kutum",                   # NorthDarfur
+                "AlFasher", "Kabkabiya", "Kutum",
                 "Mellit", "UmKadada",
-                "AlFaw", "AlFushqa", "AlGadaref",                   # AlQadarif
+                "AlFaw", "AlFushqa", "AlGadaref",
                 "AlGalabat", "AlRahd",
             ],
-            # High-rainfall savanna  (South Kurdufan + South/Central/East/West Darfur + West Kurdufan)
             "high_rainfall_savanna": [
-                "AbuJubaiyah", "Dilling", "Kadugli",                # SouthKurdufan
+                "AbuJubaiyah", "Dilling", "Kadugli",
                 "Rashad", "Talodi",
-                "Buram", "IdElGhanem", "Kas", "Nyala", "Tulus",     # SouthDarfur
-                "Mukjar", "Zallingi",                                # CentralDarfur
-                "AlDeain",                                           # EastDarfur (Nyala shared)
-                "AlGeneina",                                         # WestDarfur
-                "Abyei", "AsSalam", "EnNuhud",                      # WestKurdufan
+                "Buram", "IdElGhanem", "Kas", "Nyala", "Tulus",
+                "Mukjar", "Zallingi",
+                "AlDeain",
+                "AlGeneina",
+                "Abyei", "AsSalam", "EnNuhud",
                 "Ghebeish", "Lagawa",
             ],
-            # Gezira / Irrigated Nile belt  (Al Jazirah + White Nile + Sennar)
             "gezira_irrigated_nile": [
-                "AlKamlin", "AlMahagil", "EastalGazera",            # AlJazirah
+                "AlKamlin", "AlMahagil", "EastalGazera",
                 "NorthalGazera", "SharqalGazera",
                 "SouthalGazera", "UmAlGura",
-                "AdDouiem", "AlGutaina", "AlJabalian", "Kosti",     # WhiteNile
-                "AdDinder", "Sennar", "Singa",                      # Sennar
+                "AdDouiem", "AlGutaina", "AlJabalian", "Kosti",
+                "AdDinder", "Sennar", "Singa",
             ],
-            # Blue Nile / Rainfed mechanized belt  (Blue Nile)
             "blue_nile_rainfed": [
                 "AdDamazin", "AlKurumik", "AlRoseires",
                 "Baw", "Geissan",
@@ -335,35 +262,29 @@ COUNTRIES = {
     "south_sudan": {
         "gadm_file": os.path.join(GADM_DIR, "south_sudan", "gadm41_SSD_2.json"),
         "regions": {
-            # Greenbelt  (Western Equatoria + Central Equatoria)
             "greenbelt": [
-                "Meridi", "Mundri", "Tombura", "Yambio",            # WestEquatoria
-                "BahralJabal", "KajoKaii", "NahrYei", "Terkaka",    # CentralEquatoria
+                "Meridi", "Mundri", "Tombura", "Yambio",
+                "BahralJabal", "KajoKaii", "NahrYei", "Terkaka",
             ],
-            # Ironstone plateau  (Western Bahr al Ghazal)
             "ironstone_plateau": [
                 "Raja", "Wau",
             ],
-            # Flood plains  (Jungoli + Unity + Lakes)
             "flood_plains": [
-                "Akobo", "Ayod", "Bor", "FamalZaraf",              # Jungoli
+                "Akobo", "Ayod", "Bor", "FamalZaraf",
                 "NahrAtiem", "Pibor", "Wat",
-                "AlLeiri", "AlMayom", "Faring", "Rabkona",          # Unity
-                "Aliab", "Rumbek", "Shobet", "Yerol",               # Lakes
+                "AlLeiri", "AlMayom", "Faring", "Rabkona",
+                "Aliab", "Rumbek", "Shobet", "Yerol",
             ],
-            # Nile-Sobat river zone  (Upper Nile)
             "nile_sobat_river": [
                 "AlMabien", "AlRenk", "Baleit", "Fashooda",
                 "Malut", "Mayot", "Sobat", "Tonga",
             ],
-            # Eastern pastoral drylands  (Eastern Equatoria)
             "eastern_pastoral_drylands": [
                 "Amatonge", "Kapoeta", "Magwi", "Shokodom",
             ],
-            # Hills and Mountains  (North Bahr al Ghazal + Warap)
             "hills_and_mountains": [
-                "Aryat", "Aweil", "NahrLol", "Wanjuk",              # NorthBahr-al-Ghazal
-                "Gogrial", "Malek", "Tonj", "Warab",                # Warap
+                "Aryat", "Aweil", "NahrLol", "Wanjuk",
+                "Gogrial", "Malek", "Tonj", "Warab",
             ],
         },
     },
@@ -449,12 +370,11 @@ def compute_spi(df):
 
         df.drop(columns=[col_acc], inplace=True)
 
-        # drought classification (0=no drought, 1=moderate, 2=severe/extreme)
         cls_col = f"drought_class_spi{scale}"
         df[cls_col] = np.where(
             df[col_spi].isna(), np.nan,
-            np.where(df[col_spi] <= -1.5, 2,         # severe + extreme
-            np.where(df[col_spi] <= -1.0, 1, 0))     # moderate / no drought
+            np.where(df[col_spi] <= -1.5, 2,
+            np.where(df[col_spi] <= -1.0, 1, 0))
         )
         df[cls_col] = df[cls_col].astype("Int64")
 
@@ -502,7 +422,6 @@ def main():
         out_dir = os.path.join(SCRIPT_DIR, country)
         os.makedirs(out_dir, exist_ok=True)
 
-        # cache boundaries next to the GADM source file
         cache_dir = os.path.dirname(cfg["gadm_file"])
 
         for slug, name2_values in cfg["regions"].items():

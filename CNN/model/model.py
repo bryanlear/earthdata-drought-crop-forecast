@@ -75,12 +75,12 @@ class MaskedRegionPool(nn.Module):
         B, C, H, W = feat.shape
         _, R, _, _ = masks.shape
 
-        # Downsample masks to feature map resolution
+
         m = masks.float()
         if m.shape[-2:] != (H, W):
             m = F.interpolate(m, size=(H, W), mode='nearest')
 
-        # Weighted sum / count — safe divide (padded masks → zero vector)
+
         m_exp    = m.unsqueeze(2)
         feat_exp = feat.unsqueeze(1)
 

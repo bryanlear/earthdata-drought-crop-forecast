@@ -3,8 +3,8 @@ Training script for DroughtCNN.
 
 Usage
 -----
-    python train.py                                  # defaults
-    python train.py --label_col drought_class_spi6   # SPI-6 target
+    python train.py
+    python train.py --label_col drought_class_spi6
     python train.py --epochs 150 --lr 5e-4
 
 Checkpoints saved to CNN/model/checkpoints/best.pt
@@ -23,7 +23,6 @@ from torch.optim import Adam
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from sklearn.metrics import classification_report, f1_score
 
-# ── Paths (script lives at CNN/model/train.py) ────────────────────────────────
 SCRIPT_DIR = Path(__file__).resolve().parent
 CNN_DIR    = SCRIPT_DIR.parent
 NPZ_DIR    = CNN_DIR / 'SMAP_regions'
@@ -52,7 +51,7 @@ def run_epoch(model: nn.Module,
             labels = labels.to(device)
             months = months.to(device)
 
-            logits = model(image, months)      # (B, n_classes)
+            logits = model(image, months)
             loss   = criterion(logits, labels)
 
             if train:
@@ -104,7 +103,6 @@ def train(args: argparse.Namespace):
     criterion = nn.CrossEntropyLoss(label_smoothing=args.label_smoothing)
     print(f'Loss: CrossEntropyLoss(label_smoothing={args.label_smoothing})')
 
-    # ── Optimiser ────────────────────────────────────────────────────────────
     optimizer = Adam(model.parameters(),
                      lr=args.lr, weight_decay=args.weight_decay)
     scheduler = ReduceLROnPlateau(optimizer, mode='min', factor=0.5,
@@ -158,12 +156,11 @@ def train(args: argparse.Namespace):
                       f'(no improvement for {args.patience} epochs)')
                 break
 
-    # Save training history
+
     with open(CKPT_DIR / 'history.json', 'w') as fh:
         json.dump(history, fh, indent=2)
     print(f'History saved → {CKPT_DIR / "history.json"}')
 
-    # ── Test evaluation ──────────────────────────────────────────────────────
     print('\n=== Test-set evaluation (best checkpoint) ===')
     ckpt = torch.load(CKPT_DIR / 'best.pt', map_location=device, weights_only=True)
     model.load_state_dict(ckpt['model_state_dict'])

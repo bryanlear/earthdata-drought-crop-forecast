@@ -28,7 +28,6 @@ CHIRPS_CSV_DIR = CNN_DIR / 'CHIRPS_processing'
 GADM_DIR       = CNN_DIR / 'gadm'
 OUT_DIR        = SCRIPT_DIR
 
-# ── SMAP constants ─────────────────────────────────────────────────────────────
 AM_GROUP  = 'Soil_Moisture_Retrieval_Data_AM'
 PM_GROUP  = 'Soil_Moisture_Retrieval_Data_PM'
 SMAP_FILL = -9999.0
@@ -52,6 +51,7 @@ WINDOWS = {
     'somalia':     (153, 217, 574, 638),
     'south_sudan': (144, 208, 531, 595),
     'sudan':       (116, 180, 531, 595),
+    'djibouti':    (130, 194, 565, 629),
 }
 
 CHIRPS_NODATA_THRESHOLD = -100.0
@@ -116,6 +116,14 @@ COUNTRIES = {
             'hills_and_mountains':       ['NorthBahr-al-Ghazal', 'Warap'],
         },
     },
+    'djibouti': {
+        'gadm': 'djibouti/gadm41_DJI_1.json',
+        'regions': {
+            'coastal_arid':             ['Djiboutii', 'Arta', 'Obock'],
+            'inland_pastoral_drylands': ['AliSabieh', 'Tadjoura'],
+            'oasis_wadi_irrigated':     ['Dikhil'],
+        },
+    },
 }
 
 
@@ -150,9 +158,6 @@ def build_composite_lat_lon() -> tuple[np.ndarray, np.ndarray]:
     return lat_comp, lon_comp
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# SMAP extraction
-# ─────────────────────────────────────────────────────────────────────────────
 
 def extract_smap_window(file_path: Path,
                         r0: int, r1: int, c0: int, c1: int) -> np.ndarray:

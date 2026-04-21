@@ -20,7 +20,6 @@ PROJECT_DIR = SCRIPT_DIR.parent
 CHIRPS_DIR = PROJECT_DIR / 'reference_data_preprocessing'
 OUT_DIR = SCRIPT_DIR
 
-# CHIRPS CSVs used to determine target months
 CHIRPS_CSVS = [
     'afar_chirps_monthly.csv',
     'amhara_chirps_monthly.csv',
@@ -30,7 +29,6 @@ CHIRPS_CSVS = [
     'west_arsi_chirps_monthly.csv',
 ]
 
-# ── SMAP HDF5 groups / features ─────────────────────────────────────────────
 AM_GROUP = 'Soil_Moisture_Retrieval_Data_AM'
 PM_GROUP = 'Soil_Moisture_Retrieval_Data_PM'
 
@@ -99,7 +97,7 @@ def get_lat_lon_grids() -> tuple[np.ndarray, np.ndarray]:
     lat_grid = np.full((H, W), np.nan, dtype=np.float32)
     lon_grid = np.full((H, W), np.nan, dtype=np.float32)
 
-    # Sample 30 files spread across the archive
+
     indices = np.linspace(0, len(h5_files) - 1, 30, dtype=int)
     for idx in indices:
         with h5py.File(h5_files[idx], 'r') as f:
@@ -149,7 +147,7 @@ def build_monthly_cube(months: list[pd.Timestamp]) -> np.ndarray:
             print(f'  WARNING: no SMAP files for {month.date()}, leaving NaN')
             continue
 
-        # Stack daily extractions → nanmean
+
         daily = np.stack([extract_ethiopia(fp) for fp in files], axis=0)
         with warnings.catch_warnings():
             warnings.simplefilter('ignore', RuntimeWarning)
@@ -173,7 +171,7 @@ if __name__ == '__main__':
     print(f'\nCompositing {len(months)} months from daily SMAP ...')
     cube = build_monthly_cube(months)
 
-    # Summary
+
     print(f'\nCube shape: {cube.shape}  (T, C, H, W)')
     total = cube.size
     valid = np.count_nonzero(~np.isnan(cube))
@@ -184,7 +182,7 @@ if __name__ == '__main__':
         ch_total = cube[:, ch].size
         print(f'  {name:25s}: {100*ch_valid/ch_total:.1f}% valid')
 
-    # Save
+
     out_path = OUT_DIR / 'ethiopia_smap_monthly.npz'
     date_strings = np.array([m.strftime('%Y-%m-%d') for m in months])
     feature_names = np.array([f[2] for f in FEATURES])
@@ -199,7 +197,7 @@ if __name__ == '__main__':
     size_mb = out_path.stat().st_size / 1e6
     print(f'\nSaved {out_path.name} ({size_mb:.1f} MB)')
 
-    # Quick verification
+
     loaded = np.load(out_path)
     print(f'Verified: cube={loaded["cube"].shape}, dates={loaded["dates"].shape}, '
           f'features={list(loaded["feature_names"])}')
