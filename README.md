@@ -1,21 +1,13 @@
 ### Problem:
 
-From 'Poor Economics' by Banerjee and Duflo
+Nearly 700 M live in extreme poverty. Sub-saharan Africa accounts for around 16% of the world's population and yet they represent about 67% of those living in extreme poverty.
+By analyzing the conomic landscape of vulnerable populations more individually, policymakers can develop more tailored strategies to address the issue.
 
-Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ lower household income $\rightarrow$ worse nutrition/debt/school dropout/migration/stress/social breakdowns
+in many of the most affected countries, a relatively large share of GPD depends on agriculture. This makes them vulnerable to drought - a problem that climate change can further increase. The consequences besides economic stress, may lead to a cascade of social consequences affecting food secutiry, livelihoods, migration, long-term stabilty.
 
-**Climate change exacerbates the logic**
+Source: World Bank, Poor Economics. [1](https://data.worldbank.org), [2](https://dn790000.ca.archive.org/0/items/HistoryOfTheoriesAndIdeologiesThatGotUsInTheTurmoil/%5BAbhijit_Banerjee%2C_Esther_Duflo%5D_Poor_Economics.pdf)
 
-* Agriculture sector in low income countries rely more on rainfed agriculture, farm labor, climate-sensitive food markets.
-* Higher income households/farmers with irrigation, storage, insurance, savings, access too credit, are less exposed.
-* Applying predictive models to such problem $\rightarrow$ help farmers, insurers, water managers, governments act promptly and selectively $\rightarrow$ Prioritize resouce allocation, trigger emergency seed/financial support, index-based payout by insurer $\rightarrow$ help reduce severity of chain of effects
-
-### Drought:
-1. Rainfall deficits
-2. Soil moisture drops
-3. Plant stress rises
-4. Yield potential declines
-5. Losses
+Open-source satellite spectral data offers a cost-effective way to monitor environmental stress across agricultural regions. When combined with CNN or ViT models, these may detect spatial patterns linked to drought / land stress. [3](https://www.mdpi.com/1424-8220/25/2/472), [4](https://www.mdpi.com/2673-4591/118/1/34)
 
 ---
 
@@ -34,13 +26,7 @@ Drought $\rightarrow$ lower agricultural output / labor demand $\rightarrow$ low
 
 $1$ pixel $=$ $36km$ x $36km$ $(1296km^2)$
 
-$1$ degree latitude/longitude ~$111km$
-
 ---
-
-### West Arsi, Ethiopia:
-
-Located in the Oromia region and part of ***Ethiopia's wheat belt***. It relies heavily on rain-fed agriculture rather than irrigation therefore crop yields in the zone are extremely sensitive to root-zone soil moisture deficits
 
 *Root zone soil moisture*: Water that is available to plants usually considered to be in the upper 200 cm of soil. An accurate depiction can provide valuable insights for agricultural monitoring, weather, prediction, drought/flood warnings. 
 
@@ -57,42 +43,6 @@ Soil moisture is also dependent on soil type and vegetation.
 
 ---
 
-### Data pre-processing:
-
-**1. Spatial window:** Extract a $241 \times 187$ pixel window (224x224 with randomly jitter the crop window by up to 17 rows during training and padding) from global EASE-2 grid. 
-
-**2. Multi feature subset:** $8$ channels/pixel/day:
-
-| Channel | Source group | Description |
-|---|---|---|
-| `soil_moisture_am` | AM | 6 AM passive retrieval ($cm^3/cm^3$) |
-| `soil_moisture_pm` | PM | 6 PM passive retrieval ($cm^3/cm^3$) |
-| `surface_temp_am` | AM | Effective soil temperature (K) |
-| `surface_temp_pm` | PM | Effective soil temperature (K) |
-| `vegetation_water` | AM | Vegetation water content ($kg/m^2$) |
-| `vegetation_opacity` | AM | Vegetation optical depth (unitless) |
-| `tb_polarization_diff` | AM | $T_{b,V} - T_{b,H}$ brightness-temperature difference (K) |
-| `bulk_density` | AM | Soil bulk density ($g/cm^3$) |
-
-Quality filtering: soil-moisture channels masked if `retrieval_qual_flag` bit-0 $= 1$. All channels masked at $-9999$ fill-value sentinel.
-
-**3. Temporal compose:** Non-overlapping $3$-day `nanmean` composites ($3{,}971$ daily $\rightarrow$ $1{,}324$ composites). Improves per pixel coverage from $\sim 20$–$27$% to $\sim 60$–$65$% by aggregating across orbital swath gaps.
-
-**4. Temporal imputation:** Per-pixel linear interpolation along time axis to fill remaining composite gaps using *nearest valid observations* before and after. Edge composites forward/backward filled up to $5$ composites ($15$ days because 3-day layer used for composites). Permanently unobserved pixels (ocean, lakes) 0-filled.
-
-**5. Array to Tensor:** NumPy arrays converted to PyTorch `float32` tensors. Single-channel tensor shape $(T, Lat, Lon)$; multi feature tensor shape $(T, C, Lat, Lon)$.
-
-Stored .npz and .pt files
-
----
-
-### Temporal Train/Validation/Test splits
-
-* **Train set**(gradients and weights): Yrs 2015 - 2022 
-* **Validation set**(hyperparameter tuning, stop training before overfitting): Yrs 2023 - 2024
-* **Test**: Yrs 2025-2026
----
-
 SatMAE architecture:
 
 <p align="center">
@@ -105,6 +55,8 @@ SatMAE architecture:
 
 ![reconstruction pretraining](data_processing/plots/all_africa/reconstruction.png)
 
+**Pre-trained a SatMAE model but the amount of labeled data for downstream fine-tuning was insufficient.**
+
 ---
 
 ### Reference dataset 
@@ -113,7 +65,6 @@ SatMAE architecture:
 ![Climate Hazards Group InfraRed Precipitation with Station data (CHIRPS)](reference_data/chirps_random_samples.png)
 
 ---
-
 
 ### CIFAR-style ResNet-18 backbone CNN + Time-Series CV
 
